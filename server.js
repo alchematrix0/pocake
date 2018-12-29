@@ -1,6 +1,19 @@
-const app = require("express")();
-const stripe = require("stripe")("sk_test_oknlvGLKLTC60XWWfA1sCYKV");
+const express = require("express")
+const app = express()
+const path = require("path")
+if (process.env.NODE_ENV !== 'production'){
+  require('dotenv').config()
+}
+const stripe = require("stripe")(process.env.STRIPE_PRIV_KEY);
 app.use(require("body-parser").text());
+
+if (process.env.NODE_ENV === 'production') {
+  console.log('is production, serve statics')
+  app.use(express.static(path.resolve(__dirname, './build')));
+  app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './build/index.html'));
+  });
+}
 
 app.post("/charge", async (req, res) => {
   console.log('got charge request')
@@ -14,8 +27,9 @@ app.post("/charge", async (req, res) => {
 
     res.json({status});
   } catch (err) {
+    console.error(err)
     res.status(500).end();
   }
 });
-
-app.listen(9000, () => console.log("Listening on port 9000"));
+app.set('port', process.env.PORT || 8888)
+app.listen(app.get('port'), () => console.log(`Listening on port ${app.get('port')}`));

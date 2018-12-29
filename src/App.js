@@ -127,18 +127,20 @@ class App extends Component {
         {/* FLAVOUR */}
         <section className="question" id="flavor">
           <p>OK! Which flavour of {humanNames[this.state.currentItem.type] || "____"} would you like?</p>
-          <p>
+          <div className="gridWrapper">
             {menu.filter(i => i.type === this.state.currentItem.type).map(i => (
-              <img
-                className={`imageOption ${this.state.currentItem.flavor === i.name && "selected"}`}
-                onClick={this.assignFlavor}
-                data-flavor={i.name}
-                key={i.name}
-                alt={i.name}
-                src={i.image}
-              />))}
-          </p>
-          // <OK target="addItem" scroll={this.scroll} />
+              <div className="flavorWrapper">
+                <img
+                  className={`imageOption ${this.state.currentItem.flavor === i.name && "selected"}`}
+                  onClick={this.assignFlavor}
+                  data-flavor={i.name}
+                  key={i.name}
+                  alt={i.name}
+                  src={i.image}
+                />
+              </div>
+              ))}
+          </div>
         </section>
 
         {/* VESSEL */}
@@ -156,7 +158,6 @@ class App extends Component {
                   src={i.image}
                 />))}
             </p>
-            // <OK target="scoops" scroll={this.scroll} />
           </section>
         )}
 
@@ -186,7 +187,6 @@ class App extends Component {
                 </svg>
               </span>
             </p>
-            // <OK target="addItem" scroll={this.scroll} />
           </section>
         )}
 

@@ -40,16 +40,6 @@ export const menu = [
     humanName: "Gingerbread",
     image: gingerbread
   }, {
-    name: "honeylav",
-    type: "icecream",
-    humanName: "Honey Lavender",
-    image: honeylav
-  }, {
-    name: "strawberry_whiteChoco",
-    type: "icecream",
-    humanName: "Strawberry & White Chocolates",
-    image: strawberry_whiteChoco
-  }, {
     name: "coffee",
     type: "icecream",
     humanName: "James Coffee & Bourbon",
@@ -81,3 +71,17 @@ export const blankItem = {
   vessel: '', // ['cone', 'cup', 'waffle']
   cost: 0
 }
+
+let offMennu = [
+  {
+    name: "honeylav",
+    type: "icecream",
+    humanName: "Honey Lavender",
+    image: honeylav
+  }, {
+    name: "strawberry_whiteChoco",
+    type: "icecream",
+    humanName: "Strawberry & White Chocolates",
+    image: strawberry_whiteChoco
+  }
+]
