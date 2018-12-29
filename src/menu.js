@@ -10,6 +10,8 @@ import almond_ganache from "./img/almond_ganache.jpg";
 import cone from "./img/cone.png"
 import waffle from "./img/waffle.png"
 import cup from "./img/cup.png"
+import choco_milkshake from "./img/choco_milkshake.jpg"
+import vanilla_milkshake from "./img/vanilla_milkshake.png"
 
 export const menu = [
   {
@@ -57,6 +59,18 @@ export const menu = [
     type: "icecream",
     humanName: "Almod Ganache",
     image: almond_ganache
+  },
+  {
+    name: "choco_milkshake",
+    type: "milkshake",
+    humanName: "Chocolate Milkshake",
+    image: choco_milkshake
+  },
+  {
+    name: "vanilla_milkshake",
+    type: "milkshake",
+    humanName: "Vanilla Milkshake",
+    image: vanilla_milkshake
   }
 ]
 export const vessels = [ {name: 'cup', image: cup}, {name: 'cone', image: cone}, {name: 'waffle', image: waffle} ]
