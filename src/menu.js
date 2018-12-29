@@ -4,8 +4,8 @@ import eggnog from "./img/eggnog.jpg";
 import brownie from "./img/brownie.jpg";
 import coffee from "./img/coffee.jpg";
 import gingerbread from "./img/gingerbread.jpg";
-import honeylav from "./img/honeylav.jpg";
-import strawberry_whiteChoco from "./img/strawberry_whiteChoco.jpg";
+// import honeylav from "./img/honeylav.jpg";
+// import strawberry_whiteChoco from "./img/strawberry_whiteChoco.jpg";
 import almond_ganache from "./img/almond_ganache.jpg";
 import cone from "./img/cone.png"
 import waffle from "./img/waffle.png"
@@ -71,17 +71,24 @@ export const blankItem = {
   vessel: '', // ['cone', 'cup', 'waffle']
   cost: 0
 }
+export const Item = {
+  type: 'icecream', // ['icecream', 'sundae', 'milkshake']
+  scoops: 2, // [1, 2, 3]
+  flavor: 'coffee', // [string array of flavors]
+  vessel: 'cone', // ['cone', 'cup', 'waffle']
+  cost: 6.5
+}
 
-let offMennu = [
-  {
-    name: "honeylav",
-    type: "icecream",
-    humanName: "Honey Lavender",
-    image: honeylav
-  }, {
-    name: "strawberry_whiteChoco",
-    type: "icecream",
-    humanName: "Strawberry & White Chocolates",
-    image: strawberry_whiteChoco
-  }
-]
+// let offMennu = [
+//   {
+//     name: "honeylav",
+//     type: "icecream",
+//     humanName: "Honey Lavender",
+//     image: honeylav
+//   }, {
+//     name: "strawberry_whiteChoco",
+//     type: "icecream",
+//     humanName: "Strawberry & White Chocolates",
+//     image: strawberry_whiteChoco
+//   }
+// ]

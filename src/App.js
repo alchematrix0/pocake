@@ -29,7 +29,6 @@ class App extends Component {
     } else {
       cost = currentItem.type === "sundae" ? 6 : 10
     }
-    console.log(`calc cost: ${cost}`)
     this.setState({
       total: this.state.order.length ? this.state.order
         .map(o => Number(o.cost))
@@ -57,7 +56,6 @@ class App extends Component {
     this.setState({order, currentItem: blankItem}, () => this.scroll(false, "type", 0))
   }
   scroll = (e, t, delay = 600) => {
-    console.log(`call scroll. ${typeof e} ${t}`)
     let target = document.getElementById(e.target ? e.target.dataset.scrollto : t)
     setTimeout(function () {
       if (!target) {
@@ -68,7 +66,9 @@ class App extends Component {
     }, delay)
   }
   checkout = () => {
-    this.scroll(false, "checkout")
+    let order = this.state.order
+    order.push(this.state.currentItem)
+    this.setState({order, currentItem: blankItem}, () => this.scroll(false, "checkout"))
   }
   checkIfEnter = (e) => e.key === "Enter" ? this.scroll(false, e.target.dataset.next) : false;
   render() {
@@ -128,8 +128,8 @@ class App extends Component {
         <section className="question" id="flavor">
           <p>OK! Which flavour of {humanNames[this.state.currentItem.type] || "____"} would you like?</p>
           <div className="gridWrapper">
-            {menu.filter(i => i.type === this.state.currentItem.type).map(i => (
-              <div className="flavorWrapper">
+            {menu.filter(i => i.type === this.state.currentItem.type).map((i, index) => (
+              <div key={`flavor_${index}`} className="flavorWrapper">
                 <img
                   className={`imageOption ${this.state.currentItem.flavor === i.name && "selected"}`}
                   onClick={this.assignFlavor}
@@ -205,7 +205,11 @@ class App extends Component {
           <StripeProvider apiKey="pk_test_ue0Gv5z8wVTjsCDUxRGlRiS1">
             <div className="example">
               <Elements>
-                <Checkout order={this.state.order.length > 0 ? this.state.order : this.state.currentItem} total={this.state.total} />
+                <Checkout
+                  customerName={this.state.customerName}
+                  order={this.state.order.length > 0 ? this.state.order : [this.state.currentItem]}
+                  total={this.state.total}
+                />
               </Elements>
             </div>
           </StripeProvider>
