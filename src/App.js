@@ -4,19 +4,23 @@ import logo from "./saltStrawLogo.png";
 import "./App.css";
 import OK from "./components/OK.js"
 import Order from "./components/order.js"
-import Checkout from "./components/checkout.js"
-import {vessels, menu, blankItem} from "./menu.js"
+import FlavorOption from "./components/flavorOption.js"
+import PaymentForm from "./components/paymentForm.js"
+import { vessels, menu, blankItem } from "./menu.js"
 const humanNames = {icecream: "ice cream", sundae: "sundae", milkshake: "milk shake"}
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      stripe: null,
       customerName: "Friend",
       order: [],
       currentItem: blankItem,
       total: 0,
-      base: 0
+      base: 0,
+      stripeCardElement: 0,
+      isCheckout: false
     }
   }
   setCustomerName = (e) => this.setState({customerName: e.target.value})
@@ -38,9 +42,9 @@ class App extends Component {
         ...this.state.currentItem,
         cost
       }
-    }, () => scrollto ? this.scroll(false, scrollto) : false)
+    }, () => scrollto ? this.scroll(false, scrollto, 600, scrollto === "flavor-target", scrollto) : false)
   }
-  chooseType = (e) => this.setState({currentItem: Object.assign({}, this.state.currentItem, {type: e.target.dataset.name})}, () => this.calculateCost("flavor"))
+  chooseType = (e) => this.setState({currentItem: Object.assign({}, this.state.currentItem, {type: e.target.dataset.name})}, () => this.calculateCost("flavor-target"))
   assignFlavor = (e) => {
     this.setState({currentItem: Object.assign({}, this.state.currentItem, {flavor: e.target.dataset.flavor})}, () => this.calculateCost(this.state.currentItem.type === "icecream" ? "vessel" : "addItem"))
   }
@@ -55,14 +59,13 @@ class App extends Component {
     order.push(this.state.currentItem)
     this.setState({order, currentItem: blankItem}, () => this.scroll(false, "type", 0))
   }
-  scroll = (e, t, delay = 600) => {
+  scroll = (e, t, delay = 600, toTop = false, targetName) => {
+    console.log(`call scroll ${e} ${t} ${typeof delay}`)
     let target = document.getElementById(e.target ? e.target.dataset.scrollto : t)
-    setTimeout(function () {
-      if (!target) {
-        console.log('no target')
-        console.dir(target)
-      }
-      target.scrollIntoView({behavior: "smooth"})
+    setTimeout(() => {
+      target.scrollIntoView({behavior: "smooth", block: toTop ? "start" : "center"})
+      if (target.id === "welcome") { setTimeout(function () { document.getElementById("customerName").focus() }, delay) }
+      if (target.id === "checkout" && this.state.isCheckout) { setTimeout(() => { this.state.stripeCardElement.focus() }, delay) }
     }, delay)
   }
   checkout = () => {
@@ -70,7 +73,16 @@ class App extends Component {
     order.push(this.state.currentItem)
     this.setState({order, currentItem: blankItem}, () => this.scroll(false, "checkout"))
   }
+  cardReady = (el) => this.setState({stripeCardElement: el, isCheckout: true})
   checkIfEnter = (e) => e.key === "Enter" ? this.scroll(false, e.target.dataset.next) : false;
+  componentDidMount () {
+    if (window.Stripe) { this.setState({stripe: window.Stripe(process.env.REACT_APP_STRIPE_PUB_KEY)})
+    } else {
+      document.querySelector('#stripe-js').addEventListener('load', () => {
+        this.setState({stripe: window.Stripe(process.env.REACT_APP_STRIPE_PUB_KEY)})
+      })
+    }
+  }
   render() {
     let scoopsQuantity = Number(this.state.currentItem.scoops)
     return (
@@ -90,9 +102,9 @@ class App extends Component {
         <section id="welcome" className="question">
           <p>
             Let's start with your name
-            <br style={{marginBottom: "20px"}} />
-            <input className="customerName" name="customerName" data-next="type" onKeyUp={this.checkIfEnter} onChange={this.setCustomerName} />
           </p>
+          <input id="customerName" className="customerName" name="customerName" data-next="type" onKeyUp={this.checkIfEnter} onChange={this.setCustomerName} />
+          <br />
           <OK
             show={this.state.customerName !== 'Friend' && this.state.customerName.length > 0}
             target="type"
@@ -108,8 +120,7 @@ class App extends Component {
               <Order order={this.state.order} cost={this.state.total}/>
               <p>What can we add to your order?</p>
             </div>
-          )
-          : (
+          ) : (
             <p>
               Hi {this.state.customerName} 👋
               <br />
@@ -117,29 +128,20 @@ class App extends Component {
             </p>
           )}
           <p className="itemGroup">
-            <button onClick={this.chooseType} data-next="flavor" data-name="icecream" className={`itemButton ${this.state.currentItem.type === "icecream" && "selected"}`}>Ice Cream!</button>
-            <button onClick={this.chooseType} data-next="flavor" data-name="sundae" className={`itemButton ${this.state.currentItem.type === "sundae" && "selected"}`}>A Sundae</button>
-            <button onClick={this.chooseType} data-next="flavor" data-name="milkshake" className={`itemButton ${this.state.currentItem.type === "milkshake" && "selected"}`}>Milk Shake :)</button>
+            <button onClick={this.chooseType} data-next="flavor-target" data-name="icecream" className={`itemButton ${this.state.currentItem.type === "icecream" && "selected"}`}>Ice Cream!</button>
+            <button onClick={this.chooseType} data-next="flavor-target" data-name="sundae" className={`itemButton ${this.state.currentItem.type === "sundae" && "selected"}`}>A Sundae</button>
+            <button onClick={this.chooseType} data-next="flavor-target" data-name="milkshake" className={`itemButton ${this.state.currentItem.type === "milkshake" && "selected"}`}>Milk Shake :)</button>
             {this.state.order.length > 0 && <button onClick={this.checkout} data-next="checkout" className="itemButton" data-name="checkout">Nevermind, ready to pay</button>}
           </p>
         </section>
 
         {/* FLAVOUR */}
         <section className="question" id="flavor">
-          <p>OK! Which flavour of {humanNames[this.state.currentItem.type] || "____"} would you like?</p>
+          <p id="flavor-target">OK! Which flavor of {humanNames[this.state.currentItem.type || 'icecream']} would you like?</p>
           <div className="gridWrapper">
-            {menu.filter(i => i.type === this.state.currentItem.type).map((i, index) => (
-              <div key={`flavor_${index}`} className="flavorWrapper">
-                <img
-                  className={`imageOption ${this.state.currentItem.flavor === i.name && "selected"}`}
-                  onClick={this.assignFlavor}
-                  data-flavor={i.name}
-                  key={i.name}
-                  alt={i.name}
-                  src={i.image}
-                />
-              </div>
-              ))}
+            {menu.filter(i => i.type === (this.state.currentItem.type || 'icecream')).map((i, index) => (
+              <FlavorOption key={index} flavor={i} assignFlavor={this.assignFlavor} currentItem={this.state.currentItem} />
+            ))}
           </div>
         </section>
 
@@ -149,14 +151,20 @@ class App extends Component {
             <p>Great choice! Choose a vessel:</p>
             <p>
               {vessels.map((i, index) => (
-                <img
-                  onClick={this.assignVessel}
-                  data-vessel={i.name}
-                  key={i.name + index}
-                  className={`imageVessel imageOption ${this.state.currentItem.vessel === i.name && "selected"}`}
-                  alt={i.name}
-                  src={i.image}
-                />))}
+                <div className="flavorWrapper">
+                  <img
+                    onClick={this.assignVessel}
+                    data-vessel={i.name}
+                    key={i.name + index}
+                    className={`imageVessel imageOption ${this.state.currentItem.vessel === i.name && "selected"}`}
+                    alt={i.name}
+                    src={i.image}
+                  />
+                  <div className="flavorName" style={{display: "flex"}}>
+                    <span style={{color: "rgb(63, 69, 69)", flexGrow: 1, width: 0, textAlign: 'center'}}>{i.humanName}</span>
+                  </div>
+                </div>
+              ))}
             </p>
           </section>
         )}
@@ -202,17 +210,21 @@ class App extends Component {
 
         {/* ADD ITEM */}
         <section className="question" id="checkout">
-          <StripeProvider apiKey="pk_test_ue0Gv5z8wVTjsCDUxRGlRiS1">
-            <div className="example">
-              <Elements>
-                <Checkout
-                  customerName={this.state.customerName}
-                  order={this.state.order.length > 0 ? this.state.order : [this.state.currentItem]}
-                  total={this.state.total}
-                />
-              </Elements>
-            </div>
-          </StripeProvider>
+
+          {this.state.stripe ?
+            (
+              <StripeProvider stripe={this.state.stripe}>
+                  <Elements>
+                    <PaymentForm
+                      customerName={this.state.customerName}
+                      order={this.state.order.length > 0 ? this.state.order : [this.state.currentItem]}
+                      total={this.state.total}
+                      stripe={this.state.stripe}
+                      cardReady={this.cardReady}
+                    />
+                  </Elements>
+              </StripeProvider>
+              ) : null}
         </section>
       </div>
     );

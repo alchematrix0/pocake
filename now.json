@@ -1,6 +1,7 @@
 {
   "env": {
-		"STRIPE_PRIV_KEY": "@stripe_test_key",
+    "STRIPE_PRIV_KEY": "@stripe_test_key",
     "AIRTABLE_KEY": "@airtable_key"
-  }
+  },
+  "public": false
 }
