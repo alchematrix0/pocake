@@ -13,6 +13,9 @@ if (process.env.NODE_ENV === "production") {
   app.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "./build/index.html"));
   });
+  app.get("/.well-known/apple-developer-merchantid-domain-association", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "./.well-known/apple-developer-merchantid-domain-association"));
+  });
 }
 
 app.post("/charge", async (req, res) => {

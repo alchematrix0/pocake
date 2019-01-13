@@ -50,12 +50,32 @@
 }
 
 section.question {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: normal;
   justify-content: center;
   flex-direction: column;
-  padding: 0 10vw;
+  padding: 0 60px;
+}
+
+@media screen and (max-width: 600px) {
+  section.question.hero { padding: 0; }
+  section.question:not(.hero) {
+    font-size: 75%;
+  }
+  .gridWrapper {
+    margin-bottom: 5vh;
+  }
+  #flavor .gridWrapper {
+    justify-content: space-around;
+  }
+  #vessel {
+    padding-top: 5vh;
+  }
+  #vessel .flavorWrapper {
+    margin-bottom: 1em;
+  }
+  #flavor-target { padding-top: 1em }
 }
 
 .OK {
@@ -93,25 +113,25 @@ section.question {
 }
 
 .flavorWrapper {
-  margin: 12px;
-  display: inline-flex;
-    margin-bottom: -8px;
-    flex-flow: row wrap;
-    -moz-box-align: stretch;
-    align-items: stretch;
-    margin-right: -8px;
-  max-width: 100%;
+  display: inline-block;
+  margin-bottom: -8px;
+  flex-flow: column wrap;
+  -moz-box-align: stretch;
+  align-items: stretch;
   width: calc(25% - 6px);
   border-radius: 4px;
   min-height: 40px;
   color: rgb(79, 176, 174);
   background-color: rgba(79, 176, 174, 0.1);
-  box-shadow: rgba(79, 176, 174, 0.6) 0px 0px 0px 1px inset;
+  /* box-shadow: rgba(79, 176, 174, 0.6) 0px 0px 0px 1px inset; */
   cursor: pointer;
   opacity: 1;
   height: auto;
   width: auto;
+}
 
+#flavor .flavorWrapper {
+  margin: 1em
 }
 
 .itemGroup {
@@ -148,7 +168,7 @@ input.customerName {
   font-family: inherit;
   /* color: rgb(79, 176, 174); */
   color: black;
-  padding: 0px 0px 8px;
+  margin-bottom: 0.5em;
   border: none;
   border-bottom: black solid 1px;
   max-width: 400px;
@@ -162,18 +182,22 @@ input.customerName {
   -moz-osx-font-smoothing: grayscale;
 }
 section#addItem p:first-child { margin-bottom: 0; }
-img.imageOption { max-height: 150px; margin: 2px; cursor: pointer; }
+img.imageOption { max-height: 150px; cursor: pointer; }
 .scoop { border-radius: 100%; cursor: pointer; }
 .symbolFill { fill: white }
 .symbolFill.selected { fill: rgb(79, 176, 174) }
 .symbolOutline { fill: rgb(79, 176, 174) }
-.imageVessel { margin: 1em; }
-.selected { border: solid 1px darkorchid }
-.itemButton.selected { border: solid 2px darkorchid }
+.imageVessel { margin: 0.5em; }
+.selected:not(.imageOption) { border: solid 1px darkorchid; }
+.itemButton.selected { border: solid 2px darkorchid; }
+.imageOption.selected { outline: solid 2px darkorchid; }
 div.checkoutParent {
   max-width: 600px;
   margin: 2em 0 1em 0;
   outline: solid 1px grey;
   border-radius: 2px;
   padding: 1rem;
+}
+*:focus {
+  outline: none;
 }

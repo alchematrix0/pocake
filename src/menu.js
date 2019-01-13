@@ -47,23 +47,23 @@ export const menu = [
   }, {
     name: "almond_ganache",
     type: "icecream",
-    humanName: "Almod Ganache",
+    humanName: "Almond Ganache",
     image: almond_ganache
   },
   {
     name: "choco_milkshake",
     type: "milkshake",
-    humanName: "Chocolate Milkshake",
+    humanName: "Chocolate",
     image: choco_milkshake
   },
   {
     name: "vanilla_milkshake",
     type: "milkshake",
-    humanName: "Vanilla Milkshake",
+    humanName: "Vanilla",
     image: vanilla_milkshake
   }
 ]
-export const vessels = [ {name: 'cup', image: cup}, {name: 'cone', image: cone}, {name: 'waffle', image: waffle} ]
+export const vessels = [ {name: 'cup', humanName: 'Cup', image: cup}, {name: 'cone', humanName: 'Sugar Cone', image: cone}, {name: 'waffle', humanName: 'Waffle Cone (+.5)', image: waffle} ]
 export const blankItem = {
   type: '', // ['icecream', 'sundae', 'milkshake']
   scoops: 0, // [1, 2, 3]
