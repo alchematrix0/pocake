@@ -12,7 +12,8 @@ import waffle from "./img/waffle.png"
 import cup from "./img/cup.png"
 import choco_milkshake from "./img/choco_milkshake.jpg"
 import vanilla_milkshake from "./img/vanilla_milkshake.png"
-
+import placeholderImg from "./img/placeholder.png"
+export const placeholder = placeholderImg
 export const menu = [
   {
     name: "vanilla",

@@ -1,16 +1,35 @@
-import React from 'react'
+import React from "react"
 
 const FlavorOption = (props) => (
-  <div key={`flavor_${props.index}`} className="flavorWrapper">
-    <img
-      className={`imageOption ${props.currentItem.flavor === props.flavor.name && "selected"}`}
-      onClick={props.assignFlavor}
-      data-flavor={props.flavor.name}
-      alt={props.flavor.name}
-      src={props.flavor.image}
-    />
-    <div className="flavorName" style={{display: "flex"}}>
-      <span style={{color: "rgb(63, 69, 69)", flexGrow: 1, width: 0, textAlign: props.currentItem.type !== 'icecream' ? 'center': 'left'}}>{props.flavor.humanName}</span>
+  <div
+    onClick={props.assignFlavor}
+    data-flavor={props.flavor.name}
+    className="column is-3-tablet is-2-desktop is-6-mobile">
+    <div className={`${props.currentItem.flavor === props.flavor.name && "selected"} card optionCard`}>
+      <div className="card-image">
+        <figure className="image is-3by4">
+          <img
+            className="card-image imageOption"
+            alt={props.flavor.name}
+            src={props.flavor.image}
+            data-flavor={props.flavor.name}
+          />
+        </figure>
+      </div>
+      <div className="card-content" data-flavor={props.flavor.name} style={{padding: "1rem"}}>
+        <div className="card-header" style={{display: "flex"}}>
+          <div className='media'>
+            <div className='media-content'>
+              <p
+                style={{color: "rgb(63, 69, 69)", textAlign: props.currentItem.type !== "icecream" ? "center": "left"}}
+                data-flavor={props.flavor.name}
+                >
+                {props.flavor.humanName}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 )

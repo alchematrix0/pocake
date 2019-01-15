@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import { Elements, StripeProvider } from "react-stripe-elements"
 import logo from "./saltStrawLogo.png";
 import "./App.css";
+import "./Bulma.css";
 import OK from "./components/OK.js"
 import Order from "./components/order.js"
 import FlavorOption from "./components/flavorOption.js"
 import PaymentForm from "./components/paymentForm.js"
-import { vessels, menu, blankItem } from "./menu.js"
+import { vessels, menu, blankItem, placeholder } from "./menu.js"
 const humanNames = {icecream: "ice cream", sundae: "sundae", milkshake: "milk shake"}
 
 class App extends Component {
@@ -89,7 +90,7 @@ class App extends Component {
       <div className="App">
         <section className="question hero">
           <img src={logo} className="logo" alt="logo" />
-          <p>We're so glad you're here</p>
+          <p className="spaced">We're so glad you're here</p>
           <OK
             text="Ice Cream!"
             target="welcome"
@@ -100,7 +101,7 @@ class App extends Component {
         </section>
         {/* WELCOME */}
         <section id="welcome" className="question">
-          <p>
+          <p className="spaced">
             Let's start with your name
           </p>
           <input id="customerName" className="customerName" name="customerName" data-next="type" onKeyUp={this.checkIfEnter} onChange={this.setCustomerName} />
@@ -138,34 +139,55 @@ class App extends Component {
         {/* FLAVOUR */}
         <section className="question" id="flavor">
           <p id="flavor-target">OK! Which flavor of {humanNames[this.state.currentItem.type || 'icecream']} would you like?</p>
-          <div className="gridWrapper">
+          <div className="gridWrapper columns">
             {menu.filter(i => i.type === (this.state.currentItem.type || 'icecream')).map((i, index) => (
-              <FlavorOption key={index} flavor={i} assignFlavor={this.assignFlavor} currentItem={this.state.currentItem} />
+              <FlavorOption
+                key={index}
+                placeholder={placeholder}
+                flavor={i}
+                assignFlavor={this.assignFlavor}
+                currentItem={this.state.currentItem}
+              />
             ))}
           </div>
         </section>
 
         {/* VESSEL */}
-        {this.state.currentItem.type === "icecream" && (
+        {(this.state.currentItem.type === "icecream" || this.state.currentItem.type === "") && (
           <section className="question" id="vessel">
-            <p>Great choice! Choose a vessel:</p>
-            <p>
+            <p className="spaced">Great choice! Choose a vessel:</p>
+            <div className="columns">
               {vessels.map((i, index) => (
-                <div className="flavorWrapper">
-                  <img
+                <div key={i.name + index} className={`column is-3-tablet is-2-desktop is-6-mobile`}>
+                  <div
+                    className="card optionCard"
                     onClick={this.assignVessel}
                     data-vessel={i.name}
-                    key={i.name + index}
-                    className={`imageVessel imageOption ${this.state.currentItem.vessel === i.name && "selected"}`}
-                    alt={i.name}
-                    src={i.image}
-                  />
-                  <div className="flavorName" style={{display: "flex"}}>
-                    <span style={{color: "rgb(63, 69, 69)", flexGrow: 1, width: 0, textAlign: 'center'}}>{i.humanName}</span>
+                  >
+                    <div className="card-image imageOption">
+                      <figure className="image is-square">
+                        <img
+                          className={`${this.state.currentItem.vessel === i.name && "selected"}`}
+                          alt={i.name}
+                          src={i.image}
+                        />
+                      </figure>
+                    </div>
+                    <div className="card-content" style={{padding: "1rem"}}>
+                      <div className="card-header" style={{display: "flex"}}>
+                        <div className='media'>
+                          <div className='media-content'>
+                            <p style={{color: "rgb(63, 69, 69)", textAlign: this.state.currentItem.type !== "icecream" ? "center": "left"}} className=''>
+                              {i.humanName}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
-            </p>
+            </div>
           </section>
         )}
 

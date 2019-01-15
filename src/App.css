@@ -75,8 +75,8 @@ section.question {
   #vessel .flavorWrapper {
     margin-bottom: 1em;
   }
-  #flavor-target { padding-top: 1em }
 }
+#flavor-target, .itemGroup, .spaced { padding: 1em 0 }
 
 .OK {
   max-width: 100px;
@@ -112,22 +112,9 @@ section.question {
   flex-wrap: wrap;
 }
 
-.flavorWrapper {
-  display: inline-block;
-  margin-bottom: -8px;
-  flex-flow: column wrap;
-  -moz-box-align: stretch;
-  align-items: stretch;
-  width: calc(25% - 6px);
-  border-radius: 4px;
-  min-height: 40px;
+.optionCard {
   color: rgb(79, 176, 174);
-  background-color: rgba(79, 176, 174, 0.1);
-  /* box-shadow: rgba(79, 176, 174, 0.6) 0px 0px 0px 1px inset; */
   cursor: pointer;
-  opacity: 1;
-  height: auto;
-  width: auto;
 }
 
 #flavor .flavorWrapper {
@@ -182,7 +169,7 @@ input.customerName {
   -moz-osx-font-smoothing: grayscale;
 }
 section#addItem p:first-child { margin-bottom: 0; }
-img.imageOption { max-height: 150px; cursor: pointer; }
+img.imageOption { cursor: pointer; }
 .scoop { border-radius: 100%; cursor: pointer; }
 .symbolFill { fill: white }
 .symbolFill.selected { fill: rgb(79, 176, 174) }
@@ -200,4 +187,22 @@ div.checkoutParent {
 }
 *:focus {
   outline: none;
+}
+
+.lazy-load-image-background.blur {
+  filter: blur(15px);
+}
+
+.lazy-load-image-background.blur.lazy-load-image-loaded {
+  filter: blur(0);
+  transition: filter .3s;
+}
+
+.lazy-load-image-background.blur > img {
+  opacity: 0;
+}
+
+.lazy-load-image-background.blur.lazy-load-image-loaded > img {
+  opacity: 1;
+  transition: opacity .3s;
 }
