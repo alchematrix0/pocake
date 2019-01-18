@@ -1,4 +1,6 @@
 {
+  "alias": "pocake.alchematrix.net",
+  "name": "PoCake",
   "env": {
     "STRIPE_PRIV_KEY": "@stripe_test_key",
     "AIRTABLE_KEY": "@airtable_key"
