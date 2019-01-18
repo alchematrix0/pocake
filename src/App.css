@@ -57,6 +57,9 @@ section.question {
   flex-direction: column;
   padding: 0 60px;
 }
+div.card-content {
+  padding: 0.75rem;
+}
 
 @media screen and (max-width: 600px) {
   section.question.hero { padding: 0; }
@@ -68,6 +71,13 @@ section.question {
   }
   #flavor .gridWrapper {
     justify-content: space-around;
+  }
+  div.card-content {
+    padding: 0.5rem;
+  }
+  p.flavorName {
+    font-size: 0.9rem;
+    text-align: left;
   }
   #vessel {
     padding-top: 5vh;

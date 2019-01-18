@@ -16,13 +16,14 @@ const FlavorOption = (props) => (
           />
         </figure>
       </div>
-      <div className="card-content" data-flavor={props.flavor.name} style={{padding: "1rem"}}>
-        <div className="card-header" style={{display: "flex"}}>
-          <div className='media'>
-            <div className='media-content'>
+      <div className="card-content" data-flavor={props.flavor.name}>
+        <div className="card-header" style={{display: "flex", boxShadow: "none"}}>
+          <div className="media">
+            <div className="media-content">
               <p
-                style={{color: "rgb(63, 69, 69)", textAlign: props.currentItem.type !== "icecream" ? "center": "left"}}
+                style={{color: "rgb(63, 69, 69)"}}
                 data-flavor={props.flavor.name}
+                className="flavorName"
                 >
                 {props.flavor.humanName}
               </p>

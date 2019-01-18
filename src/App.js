@@ -79,7 +79,7 @@ class App extends Component {
   componentDidMount () {
     if (window.Stripe) { this.setState({stripe: window.Stripe(process.env.REACT_APP_STRIPE_PUB_KEY)})
     } else {
-      document.querySelector('#stripe-js').addEventListener('load', () => {
+      document.querySelector("#stripe-js").addEventListener("load", () => {
         this.setState({stripe: window.Stripe(process.env.REACT_APP_STRIPE_PUB_KEY)})
       })
     }
@@ -90,24 +90,24 @@ class App extends Component {
       <div className="App">
         <section className="question hero">
           <img src={logo} className="logo" alt="logo" />
-          <p className="spaced">We're so glad you're here</p>
+          <p className="spaced">We"re so glad you"re here</p>
           <OK
             text="Ice Cream!"
             target="welcome"
             scroll={this.scroll}
             hideEnter={true}
-            style={{maxWidth: '100%', fontSize: '2rem'}}
+            style={{maxWidth: "100%", fontSize: "2rem"}}
           />
         </section>
         {/* WELCOME */}
         <section id="welcome" className="question">
           <p className="spaced">
-            Let's start with your name
+            Let"s start with your name
           </p>
           <input id="customerName" className="customerName" name="customerName" data-next="type" onKeyUp={this.checkIfEnter} onChange={this.setCustomerName} />
           <br />
           <OK
-            show={this.state.customerName !== 'Friend' && this.state.customerName.length > 0}
+            show={this.state.customerName !== "Friend" && this.state.customerName.length > 0}
             target="type"
             scroll={this.scroll}
             />
@@ -138,9 +138,9 @@ class App extends Component {
 
         {/* FLAVOUR */}
         <section className="question" id="flavor">
-          <p id="flavor-target">OK! Which flavor of {humanNames[this.state.currentItem.type || 'icecream']} would you like?</p>
+          <p id="flavor-target">OK! Which flavor of {humanNames[this.state.currentItem.type || "icecream"]} would you like?</p>
           <div className="gridWrapper columns">
-            {menu.filter(i => i.type === (this.state.currentItem.type || 'icecream')).map((i, index) => (
+            {menu.filter(i => i.type === (this.state.currentItem.type || "icecream")).map((i, index) => (
               <FlavorOption
                 key={index}
                 placeholder={placeholder}
@@ -170,14 +170,15 @@ class App extends Component {
                           className={`${this.state.currentItem.vessel === i.name && "selected"}`}
                           alt={i.name}
                           src={i.image}
+                          data-vessel={i.name}
                         />
                       </figure>
                     </div>
-                    <div className="card-content" style={{padding: "1rem"}}>
-                      <div className="card-header" style={{display: "flex"}}>
-                        <div className='media'>
-                          <div className='media-content'>
-                            <p style={{color: "rgb(63, 69, 69)", textAlign: this.state.currentItem.type !== "icecream" ? "center": "left"}} className=''>
+                    <div className="card-content">
+                      <div className="card-header" style={{display: "flex", boxShadow: "none"}}>
+                        <div className="media">
+                          <div className="media-content">
+                            <p style={{color: "rgb(63, 69, 69)", textAlign: this.state.currentItem.type !== "icecream" ? "center": "left"}} data-vessel={i.name}>
                               {i.humanName}
                             </p>
                           </div>

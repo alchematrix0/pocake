@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { CardElement, injectStripe } from "react-stripe-elements"
-
+import { requestPushPermission, subscribeToPush } from "../utils/push.js"
 class Checkout extends Component {
   constructor(props){
     super(props)
@@ -30,11 +30,26 @@ class Checkout extends Component {
       })
     })
     let parsed = await response.json()
-    console.dir(parsed)
-    if (parsed.status === "succeeded") this.setState({status: "paid"})
-    else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
+    if (parsed.status === "succeeded") {
+      this.setState({status: "paid"})
+      console.log('charge succeeded, request push access checkout:35')
+      this.requestPushPermissionAndSubscribe(parsed.orderId)
+      navigator.serviceWorker.controller.postMessage({name: this.props.customerName, order: this.props.order})
+    } else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
   }
-
+  requestPushPermissionAndSubscribe(orderId) {
+    console.log('request push from checkout')
+    return requestPushPermission()
+    .then(permissionResult => {
+      if (permissionResult === 'granted') {
+        console.log('permission granted, subscribing order id: ' + orderId)
+        return subscribeToPush(orderId).then(done => {
+          console.log('returned from subscribe call:')
+          console.dir(done)
+        })
+      }
+    })
+  }
   render() {
     return (
       <div>
