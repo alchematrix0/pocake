@@ -2,17 +2,17 @@ const express = require("express")
 const app = express()
 const path = require("path")
 const shortid = require("shortid")
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt")
 const saltRounds = 10;
 if (process.env.NODE_ENV !== "production") { require("dotenv").config() }
 const stripe = require("stripe")(process.env.STRIPE_PRIV_KEY)
 app.use(require("body-parser").json())
 
-const monk = require('monk')
+const monk = require("monk")
 const mlab = monk(process.env.MONGODB_URI_PW)
 const database = {
-  accounts: mlab.get('accounts'),
-  orders: mlab.get('orders')
+  accounts: mlab.get("accounts"),
+  orders: mlab.get("orders")
 }
 
 const Airtable = require("airtable")
@@ -33,6 +33,7 @@ app.use(function (req, res, next) {
   next()
 })
 app.get("/testconn", (req, res) => {
+  console.log("get to testconn received, fetch from mongo")
   return database.orders.find()
   .then(orders => {
     return database.orders.count(count => {
@@ -52,7 +53,7 @@ app.post("/charge", async (req, res) => {
     })
     if (charge.paid) {
       const thisOrder = req.body.order
-        .map(o => o.type === 'icecream' ?
+        .map(o => o.type === "icecream" ?
           `${o.scoops} scoops of ${o.flavor} in a ${o.vessel}` :
           `${o.flavor} ${o.type}`)
       let airtableOrder = {
@@ -76,11 +77,11 @@ app.post("/charge", async (req, res) => {
       .then(insertResult => res.json({status: charge.status, orderId: thisOrderId}))
       // return db("salt&straw").create(airtableOrder, function (err, record) {
       //   if (err) {
-      //     console.log('airtable error')
+      //     console.log("airtable error")
       //     console.error(err)
       //     res.json({status: "failed", message: err.message})
       //   } else {
-      //     console.log('created an entry with id: ' + record.getId())
+      //     console.log("created an entry with id: " + record.getId())
       //     res.json({status: charge.status, airtableId: record.getId()})
       //   }
       // })
@@ -111,7 +112,7 @@ app.post("/login", (req, res) => {
         return database.orders.find({company: req.body.company})
         .then(orders => res.json({orders, user}))
       } else {
-        console.log('auth failed')
+        console.log("auth failed")
         res.json({orders: [], user: null})
       }
     }
@@ -125,7 +126,7 @@ app.post("/handleOrderReady", (req, res) => {
   return database.orders.findOneAndUpdate({id: req.body.orderId}, {$set: {order_out: now}})
   .then(order => {
     console.dir(order)
-    console.log('dispatchPushNotification()')
+    console.log("dispatchPushNotification()")
     res.sendStatus(200)
   })
 })
