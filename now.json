@@ -3,7 +3,9 @@
   "name": "PoCake",
   "env": {
     "STRIPE_PRIV_KEY": "@stripe_test_key",
-    "AIRTABLE_KEY": "@airtable_key"
+    "AIRTABLE_KEY": "@airtable_key",
+    "REACT_APP_STRIPE_PUB_KEY": "@react_app_stripe_pub_key",
+    "MONGODB_URI_PW": "@mongodb_uri_pw"
   },
   "public": false
 }
