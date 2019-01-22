@@ -1,0 +1,6 @@
+.env
+.DS_Store
+build
+.well-known
+apple-developer-*
+node_modules
