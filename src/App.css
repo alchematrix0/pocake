@@ -69,6 +69,10 @@ section.question {
   #flavor .gridWrapper {
     justify-content: space-around;
   }
+  div.card.optionCard div.card-content {
+    padding-left: 0.5rem;
+    font-size: 1rem;
+  }
   #vessel {
     padding-top: 5vh;
   }
