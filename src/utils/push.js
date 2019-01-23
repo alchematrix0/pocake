@@ -13,19 +13,19 @@ module.exports = {
     })
   },
   subscribeToPush: function (orderId) {
-    console.log('subscribing at push.js:31')
-    const applicationServerKey = "BD1LaRsI1LcJGCi0yQe3_CmAKgfvule6-HySAjcbpp1zpXr8sCyOA7QeM2ZfcOIv3TIRruugX-OuU8hKxysxfCM"
+    console.log(`subscribeToPush :: order: ${orderId} at push.js:16`)
+    console.log(process.env.REACT_APP_VAPID_PUBLIC_KEY)
+    const applicationServerKey = process.env.REACT_APP_VAPID_PUBLIC_KEY || "BOrHb0d2ZL2jnqi17RXwuHz359bszFd-TrqrTmdrIWDR_0b_kkDq_inBRnkOvg50v6TDNUMf7jPaAVexa0urJJM"
+    // const applicationServerKey = "BOrHb0d2ZL2jnqi17RXwuHz359bszFd-TrqrTmdrIWDR_0b_kkDq_inBRnkOvg50v6TDNUMf7jPaAVexa0urJJMM"
     const urlBase64ToUint8Array = function (base64String) {
-      const padding = "=".repeat((4 - base64String.length % 4) % 4);
+      const padding = "=".repeat((4 - base64String.length % 4) % 4)
       const base64 = (base64String + padding)
         .replace(/-/g, "+")
-        .replace(/_/g, "/");
-
-      const rawData = window.atob(base64);
+        .replace(/_/g, "/")
+      const rawData = window.atob(base64)
       const outputArray = new Uint8Array(rawData.length);
-
       for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
+        outputArray[i] = rawData.charCodeAt(i)
       }
       return outputArray;
     }
@@ -33,34 +33,41 @@ module.exports = {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
     }
-    console.dir(subscribeOptions)
+    const sendSubscriptionToServer = (pushSubscription) => fetch("/receivePushSubscription", {
+      method: "POST",
+      headers: { "Content-type": "application/json"},
+      body: JSON.stringify({ subscription: pushSubscription, orderId })
+    })
+    .then(updateResponse => {
+      console.log('update response push.js[40]:')
+      console.dir(updateResponse)
+      return updateResponse
+    })
+    .catch(error => {
+      console.error(error)
+    })
     return navigator.serviceWorker.ready.then(swreg => {
-      console.log('SW ready push:38')
-      console.dir(swreg)
-      return swreg.pushManager.subscribe(subscribeOptions)
-      .then(function(pushSubscription) {
-        console.dir(pushSubscription.toJSON())
-        console.log('send fetch to receivePushSubscription')
-        return fetch("/receivePushSubscription", {
-          method: "POST",
-          headers: { "Content-type": "application/json"},
-          body: JSON.stringify({
-            subscription: pushSubscription,
-            orderId
+      console.log("SW ready push.js:48")
+      swreg.pushManager.getSubscription()
+      .then(function(subscription) {
+        let isSubscribed = !(subscription === null)
+        if (isSubscribed) {
+          console.log('User IS already subscribed. push.js:53')
+          // TODO might be a good time to stick this in session storage
+          return sendSubscriptionToServer(subscription)
+        } else {
+          return swreg.pushManager.subscribe(subscribeOptions)
+          .then(function(pushSubscription) {
+            console.log("send fetch to receivePushSubscription")
+            // TODO might be a good time to stick this in session storage
+            return sendSubscriptionToServer(pushSubscription)
           })
-        }).then(updateResponse => {
-            console.dir(updateResponse)
-            return updateResponse
+          .catch(function(pushSubscriptionError) {
+            console.log("Failed to subscribe to push: ", pushSubscriptionError)
+            return pushSubscriptionError
           })
-          .catch(error => {
-            console.error(error)
-          })
-      })
-      .catch(function(pushSubscriptionError) {
-        console.log("Failed to subscribe to push: ", pushSubscriptionError)
-        return pushSubscriptionError
+        }
       })
     })
-
   }
 }

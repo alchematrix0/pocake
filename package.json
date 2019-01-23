@@ -14,14 +14,16 @@
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.2",
     "react-stripe-elements": "^2.0.1",
-    "stripe": "^6.20.0"
+    "stripe": "^6.20.0",
+    "web-push": "^3.3.3"
   },
   "scripts": {
     "start": "concurrently \"NODE_ENV=production node ./server.js\" \"BROWSER=none react-scripts start\"",
     "startDev": "concurrently \"NODE_ENV=development nodemon ./server.js\" \"BROWSER=none react-scripts start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "now && now alias"
   },
   "eslintConfig": {
     "extends": "react-app"

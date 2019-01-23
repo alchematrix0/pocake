@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { CardElement, injectStripe } from "react-stripe-elements"
+import { requestPushPermission, subscribeToPush } from "../utils/push.js"
 
 class Checkout extends Component {
   constructor(props){
@@ -30,11 +31,43 @@ class Checkout extends Component {
       })
     })
     let parsed = await response.json()
-    console.dir(parsed)
-    if (parsed.status === "succeeded") this.setState({status: "paid"})
-    else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
-  }
+    if (parsed.status === "succeeded") {
+      this.setState({status: "paid"})
+      console.log("charge succeeded, request push access checkout:35")
+      console.dir(parsed)
+      // At this point, we have created the charge and will request push for when the order is called out
+      this.requestPushPermissionAndSubscribe(parsed.orderId)
+      // navigator.serviceWorker.controller.postMessage({name: this.props.customerName, order: this.props.order})
+      // Artificial implementation of order being called after 5 seconds for demo purposes
 
+      setTimeout(async () => {
+        console.log("call handleOrderReady [checkout.js:41]")
+        // TODO: option here to retrieve subscription from session storage
+        let retrieveNotifyEndpoint = await fetch("/handleOrderReady", {
+          method: "POST",
+          headers: {"Accept": "application/json", "Content-Type": "application/json"},
+          body: JSON.stringify({ orderId: parsed.orderId, notify: "" })
+        })
+        let pushSubscription = await retrieveNotifyEndpoint.json().notify
+        console.dir(pushSubscription)
+        // TODO Begin logic for sending the push notification
+      }, 5000)
+
+    } else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
+  }
+  requestPushPermissionAndSubscribe(orderId) {
+    console.log('request push from checkout.js:53')
+    return requestPushPermission()
+    .then(permissionResult => {
+      if (permissionResult === 'granted') {
+        console.log('permission granted, subscribing order id: ' + orderId)
+        return subscribeToPush(orderId).then(done => {
+          console.log('returned from subscribe call:')
+          console.dir(done)
+        })
+      }
+    })
+  }
   render() {
     return (
       <div>
