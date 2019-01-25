@@ -72,22 +72,39 @@ app.post("/receivePushSubscription", (req, res) => {
   // return database.orders.findOneAndUpdate({id: req.body.orderId}, {$set: {notify: req.body.subscription.endpoint}})
   // .then(order => res.json(order))
 })
+app.post("/markOrderReady", (req, res) => {
+  console.log(`mark order ready`)
+  console.dir(req.body)
+  db("salt&straw").update(req.body.orderId || req.body.id, {"Called": true}, function (err, record) {
+    if (err) console.error(err)
+    else res.json(record)
+  })
+})
 app.post("/handleOrderReady", (req, res) => {
   console.log(`handle order ready`)
   console.dir(req.body)
   let now = new Date().toISOString()
   if (req.body.notify) {
-    console.log(`Send push via: ${req.body.notify}`)
+    console.log(`Send push via Zapier`)
+    try {
+      pushNotifs.sendPush(req.body.notify, `${req.body.name}, great news! Your order of ${req.body.order} is up!`, {})
+      res.sendStatus(200)
+    }
+    catch (err) {
+      console.error(err)
+      res.sendStatus(400)
+    }
   } else {
+    console.log(`Mark ready [Internal]`)
     db("salt&straw").find(req.body.orderId, function(err, record) {
       if (err) {
         console.error(err)
         res.sendStatus(204)
       } else {
         if (record.get("Notify")) {
-          console.log(`Send push via record: ${record.get('Notify')}`)
-          pushNotifs.sendPush(record.get('Notify'), `${record.get('Name')}, great news! Your order of ${record.get('Order')} is up!`, {})
-          res.json({notify: record.get('Notify')})
+          console.log(`Send push via record: ${record.get("Notify")}`)
+          pushNotifs.sendPush(record.get("Notify"), `${record.get('Name')}, great news! Your order of ${record.get('Order')} is up!`, {})
+          res.json({notify: record.get("Notify")})
         } else {
           console.log(`this record has no notify`)
           res.sendStatus(204)
