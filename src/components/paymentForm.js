@@ -21,6 +21,7 @@ class PaymentForm extends Component {
     paymentRequest.on('token', ({complete, token, ...data}) => {
       console.log('Received Stripe token: ', token);
       console.log('Received customer information: ', data);
+      postOrderToServer(token.id)
       complete('success');
     });
 
