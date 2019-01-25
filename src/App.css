@@ -121,6 +121,10 @@ section.question {
   cursor: pointer;
 }
 
+.card-content {
+  padding: 1rem;
+}
+
 #flavor .flavorWrapper {
   margin: 1em
 }
