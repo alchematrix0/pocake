@@ -43,7 +43,8 @@ class Checkout extends Component {
       setTimeout(async () => {
         console.log("call handleOrderReady [checkout.js:41]")
         // TODO: option here to retrieve subscription from session storage
-        let retrieveNotifyEndpoint = await fetch("/handleOrderReady", {
+        // let retrieveNotifyEndpoint = await fetch("/handleOrderReady", {
+        let retrieveNotifyEndpoint = await fetch("/markOrderReady", {
           method: "POST",
           headers: {"Accept": "application/json", "Content-Type": "application/json"},
           body: JSON.stringify({ orderId: parsed.orderId, notify: "" })
