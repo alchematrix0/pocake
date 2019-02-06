@@ -20,6 +20,7 @@
   "scripts": {
     "start": "concurrently \"NODE_ENV=production node ./server.js\" \"BROWSER=none react-scripts start\"",
     "startDev": "concurrently \"NODE_ENV=development nodemon ./server.js\" \"BROWSER=none react-scripts start\"",
+    "now-build": "react-scripts build && mv build dist",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

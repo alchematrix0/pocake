@@ -92,7 +92,7 @@ class PaymentForm extends Component {
               <h6>Message: {this.state.errorMessage}</h6>
             </>
           )}
-          {process.env.REACT_APP_DEMO && (
+          {process.env.REACT_APP_DEMO === "on" && (
             <small style={{top: '5em', fontSize: '60%', position: 'relative'}}>
               This app is in demo mode.<br />
               You can use 4242424242424242 with any date and cvc to simulate a payment.
