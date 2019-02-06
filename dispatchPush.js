@@ -12,16 +12,11 @@ module.exports = {
       process.env.VAPID_PUBLIC_KEY,
       process.env.VAPID_PRIVATE_KEY
     )
-    console.log(process.env.VAPID_PUBLIC_KEY)
-    console.log(process.env.VAPID_PRIVATE_KEY)
-    console.log(payload)
     let ps = JSON.parse(subscription)
     const pushSubscription = {
       endpoint: ps.endpoint,
       keys: ps.keys
     }
-    console.log(typeof pushSubscription)
-    console.dir(pushSubscription)
     options = {
       TTL: 24 * 60 * 60,
       vapidDetails: {

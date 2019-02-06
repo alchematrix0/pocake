@@ -5,7 +5,14 @@ import pushMethods from "../utils/push.js"
 
 class PaymentForm extends Component {
   constructor(props) {
-    super(props);
+    super(props)
+
+    this.state = {
+      canMakePayment: false,
+      paymentRequest,
+      status: "input",
+      errorMessage: ""
+    }
 
     // For full documentation of the available paymentRequest options, see:
     // https://stripe.com/docs/stripe.js#the-payment-request-object
@@ -16,46 +23,47 @@ class PaymentForm extends Component {
         label: `Order for ${props.customerName}`,
         amount: Number(props.order.total || 0),
       },
-    });
+    })
 
     paymentRequest.on('token', ({complete, token, ...data}) => {
-      console.log('Received Stripe token: ', token);
-      console.log('Received customer information: ', data);
+      console.log('Received Stripe token: ', token)
+      console.log('Received customer information: ', data)
       postOrderToServer(token.id)
-      complete('success');
-    });
+      complete('success')
+    })
 
     paymentRequest.canMakePayment().then((result) => this.setState({canMakePayment: !!result}))
 
-    this.state = {
-      canMakePayment: false,
-      paymentRequest,
-      status: "input",
-      errorMessage: ""
-    };
     const postOrderToServer = async (tokenId) => {
       this.setState({status: "pending"})
-      let postOrder = await fetch("/charge", {
-        method: "POST",
-        headers: {"Accept": "application/json", "Content-Type": "application/json"},
-        body: JSON.stringify({
-          "id": tokenId,
-          "customerName": this.props.customerName,
-          "total": this.props.total || 5,
-          "order": this.props.order
-        })
-      })
-      let serverResponse = await postOrder.json()
-      console.dir(serverResponse)
-      if (serverResponse.status === "succeeded") {
-        this.setState({status: "paid"})
-        // At this point, we have created the charge and will request push for when the order is called out
-        pushMethods.requestPushPermissionAndSubscribe(serverResponse.orderId)
-        // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
-        pushMethods.triggerOrderReady(serverResponse.orderId)
-      } else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
+      try {
+        let postOrder = await fetch("/charge", {
+          method: "POST",
+          headers: {"Accept": "application/json", "Content-Type": "application/json"},
+          body: JSON.stringify({
+            "id": tokenId,
+            "customerName": this.props.customerName,
+            "total": this.props.total || 5,
+            "order": this.props.order
+            })
+            })
+            let serverResponse = await postOrder.json()
+            console.dir(serverResponse)
+            if (serverResponse.status === "succeeded") {
+              this.setState({status: "paid"})
+              // At this point, we have created the charge and will request push for when the order is called out
+              pushMethods.requestPushPermissionAndSubscribe(serverResponse.orderId)
+              // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
+              pushMethods.triggerOrderReady(serverResponse.orderId)
+              } else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
+      } catch (err) {
+        console.error(err)
+        this.setState({status: "failed", errorMessage: "The charge was not succesful. Sorry pal."})
+      }
     }
+
     this.postOrderToServer = postOrderToServer.bind(this)
+
   }
   render() {
     let activePaymentForm = this.state.canMakePayment ? (
@@ -68,7 +76,7 @@ class PaymentForm extends Component {
           paymentRequestButton: {
             theme: 'light',
             height: '64px',
-          },
+          }
         }}
       />
     ) : (
@@ -102,4 +110,4 @@ class PaymentForm extends Component {
     )
   }
 }
-export default injectStripe(PaymentForm);
+export default injectStripe(PaymentForm)

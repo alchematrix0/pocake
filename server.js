@@ -78,6 +78,7 @@ app.post("/markOrderReady", (req, res) => {
     else res.json(record)
   })
 })
+// route to artificially mark an order ready for demo purposes
 app.post("/handleOrderReady", (req, res) => {
   console.log(`handle order ready`)
   console.dir(req.body)
@@ -111,6 +112,7 @@ app.post("/handleOrderReady", (req, res) => {
     })
   }
 })
+// util route to check if push is working
 app.get("/testPush", (req, res) => {
   let sub = {
     endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gAAAAABcSLUkr1bRSYvLJKiHgieUzFlkxbtsVyoTaSbNrkDpmFPGQ4kp1LjqOYuhbLjrIfaDJnFv_87NiEmTLr7gpMcyEXIPEhO4lYq73e-jQsHrGvm0WV-_rlsDVYdM0_LE05eyPvt9MI4GqRLUvq4wRhV-wjBRuYBMopwWEQEECFctR5zYO0Q',
