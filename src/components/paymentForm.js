@@ -6,14 +6,6 @@ import pushMethods from "../utils/push.js"
 class PaymentForm extends Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      canMakePayment: false,
-      paymentRequest,
-      status: "input",
-      errorMessage: ""
-    }
-
     // For full documentation of the available paymentRequest options, see:
     // https://stripe.com/docs/stripe.js#the-payment-request-object
     const paymentRequest = props.stripe.paymentRequest({
@@ -45,17 +37,17 @@ class PaymentForm extends Component {
             "customerName": this.props.customerName,
             "total": this.props.total || 5,
             "order": this.props.order
-            })
-            })
-            let serverResponse = await postOrder.json()
-            console.dir(serverResponse)
-            if (serverResponse.status === "succeeded") {
-              this.setState({status: "paid"})
-              // At this point, we have created the charge and will request push for when the order is called out
-              pushMethods.requestPushPermissionAndSubscribe(serverResponse.orderId)
-              // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
-              pushMethods.triggerOrderReady(serverResponse.orderId)
-              } else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
+          })
+        })
+        let serverResponse = await postOrder.json()
+        console.dir(serverResponse)
+        if (serverResponse.status === "succeeded") {
+          this.setState({status: "paid"})
+          // At this point, we have created the charge and will request push for when the order is called out
+          pushMethods.requestPushPermissionAndSubscribe(serverResponse.orderId)
+          // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
+          pushMethods.triggerOrderReady(serverResponse.orderId)
+        } else this.setState({status: "failed", errorMessage: "The charge was not succesful."})
       } catch (err) {
         console.error(err)
         this.setState({status: "failed", errorMessage: "The charge was not succesful. Sorry pal."})
@@ -64,6 +56,12 @@ class PaymentForm extends Component {
 
     this.postOrderToServer = postOrderToServer.bind(this)
 
+    this.state = {
+      canMakePayment: false,
+      paymentRequest,
+      status: "input",
+      errorMessage: ""
+    }
   }
   render() {
     let activePaymentForm = this.state.canMakePayment ? (
@@ -92,20 +90,20 @@ class PaymentForm extends Component {
     )
     return (
       <div>
-        <p>Checkout</p>
-          {this.state.status === "paid" ? (<h3>Success! Your order will be up shortly</h3>) : activePaymentForm}
-          {this.state.status === "failed" && (
-            <>
-              <h4>Order failed.</h4>
-              <h6>Message: {this.state.errorMessage}</h6>
-            </>
-          )}
-          {process.env.REACT_APP_DEMO === "on" && (
-            <small style={{top: '5em', fontSize: '60%', position: 'relative'}}>
-              This app is in demo mode.<br />
-              You can use 4242424242424242 with any date and cvc to simulate a payment.
-            </small>
-          )}
+        {this.state.status !== "paid" && (<p>Checkout</p>)}
+        {this.state.status === "paid" ? (<h3>Success! Your order will be up shortly</h3>) : activePaymentForm}
+        {this.state.status === "failed" && (
+          <>
+            <h4>Order failed.</h4>
+            <h6>Message: {this.state.errorMessage}</h6>
+          </>
+        )}
+        {process.env.REACT_APP_DEMO === "on" && (
+          <small style={{top: '5em', fontSize: '60%', position: 'relative'}}>
+            This app is in demo mode.<br />
+            You can use 4242424242424242 with any date and cvc to simulate a payment.
+          </small>
+        )}
       </div>
     )
   }

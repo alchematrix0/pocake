@@ -33,7 +33,6 @@ class Checkout extends Component {
         >
           {this.props.status === "pending" ? "Processing..." : "Pay Now"}
         </button>
-        {this.state.status === "failed" && (<p>{this.state.errorMessage}</p>)}
       </div>
     )
   }

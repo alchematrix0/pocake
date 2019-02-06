@@ -62,7 +62,6 @@ class App extends Component {
     this.setState({order, currentItem: blankItem}, () => this.scroll(false, "type", 0))
   }
   scroll = (e, t, delay = 600, toTop = false, targetName) => {
-    console.log(`call scroll ${e} ${t} ${typeof delay}`)
     let target = document.getElementById(e.target ? e.target.dataset.scrollto : t)
     setTimeout(() => {
       target.scrollIntoView({behavior: "smooth", block: toTop ? "start" : "center"})
