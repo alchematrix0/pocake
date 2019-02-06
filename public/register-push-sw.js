@@ -1,7 +1,7 @@
 let swRegistration;
 if ('serviceWorker' in navigator) {
   console.log(`register-push-sw will register its own SW`)
-  navigator.serviceWorker.register("../push-sw.js")
+  navigator.serviceWorker.register("./custom-sw.js")
   .then(swReg => {
     console.log('push manager sw is registered')
     swRegistration = swReg

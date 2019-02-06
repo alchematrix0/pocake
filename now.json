@@ -12,9 +12,5 @@
     "VAPID_PRIVATE_KEY": "@vapid_private_key"
   },
   "public": false,
-  "version": 2,
-  "builds": [
-    { "src": "server.js", "use": "@now/node" },
-    { "src": "package.json", "use": "@now/static-build" }
-  ]
+  "version": 1
 }

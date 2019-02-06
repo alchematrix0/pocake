@@ -9,6 +9,8 @@ const Airtable = require("airtable")
 const db = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base("appFhYtU2XMJZRS8e")
 const pushNotifs = require("./dispatchPush.js")
 
+console.log('EXECUTING SERVER.JS')
+
 if (process.env.NODE_ENV === "production") {
   console.log("is production, serve statics")
   app.use(express.static(path.resolve(__dirname, "./build")))
@@ -126,5 +128,6 @@ app.get("/testPush", (req, res) => {
   pushNotifs.sendPush(sub, `Michel, great news! Your order of vanilla ice cream is up!`, {})
   res.sendStatus(200)
 })
+app.get("/serverUp", (req, res) => res.json({port: app.get("port")}))
 app.set("port", process.env.PORT || 8888)
 app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`))
