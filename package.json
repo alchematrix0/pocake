@@ -1,7 +1,7 @@
 {
   "name": "pocake",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "airtable": "^0.5.8",
     "body-parser": "^1.18.3",

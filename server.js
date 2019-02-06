@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
 const path = require("path")
-if (process.env.NODE_ENV !== "production") { require("dotenv").config() }
+if (process.env.NODE_ENV !== "production") { require("dotenv").config({path: "./server.env"}) }
 const stripe = require("stripe")(process.env.STRIPE_PRIV_KEY)
 app.use(require("body-parser").json())
 
@@ -79,12 +79,12 @@ app.post("/markOrderReady", (req, res) => {
   })
 })
 // route to artificially mark an order ready for demo purposes
+// this route is hit by Zapier after markOrderReady is called on a 5 minute poll. simulates order being made and called out.
 app.post("/handleOrderReady", (req, res) => {
-  console.log(`handle order ready`)
   console.dir(req.body)
   let now = new Date().toISOString()
   if (req.body.notify) {
-    console.log(`Send push via Zapier`)
+    // if Airtable had the notify set when this webhook was fired
     try {
       pushNotifs.sendPush(req.body.notify, `${req.body.name}, great news! Your order of ${req.body.order} is up!`, {})
       res.sendStatus(200)
@@ -94,6 +94,7 @@ app.post("/handleOrderReady", (req, res) => {
       res.sendStatus(400)
     }
   } else {
+    // Airtable didn't have the push sub at the time, let's check for it now.
     console.log(`Mark ready [Internal]`)
     db("salt&straw").find(req.body.orderId, function(err, record) {
       if (err) {

@@ -6,7 +6,7 @@ class Checkout extends Component {
     this.submit = this.submit.bind(this)
     this.postOrderToServer = props.postOrderToServer.bind(this)
     this.state = {
-      status: "input",
+      status: props.status,
       errorMessage: ""
     }
   }
@@ -31,7 +31,7 @@ class Checkout extends Component {
           onClick={this.submit}
           style={{minWidth: "100px"}}
         >
-          {this.props.status === "pending" ? "Processing..." : "Pay Now"}
+          {this.state.status === "pending" ? "Processing..." : "Pay Now"}
         </button>
       </div>
     )
