@@ -53,23 +53,17 @@
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1",
     "react-stripe-elements": "^2.0.1",
-    "resolve": "1.8.1",
-    "sass-loader": "7.1.0",
-    "shortid": "^2.2.14",
     "stripe": "^6.20.0",
-    "style-loader": "0.23.0",
-    "terser-webpack-plugin": "1.1.0",
-    "url-loader": "1.1.1",
-    "webpack": "4.19.1",
-    "webpack-dev-server": "3.1.9",
-    "webpack-manifest-plugin": "2.0.4",
-    "workbox-webpack-plugin": "3.6.3"
+    "web-push": "^3.3.3"
   },
   "scripts": {
-    "start": "concurrently \"NODE_ENV=production node ./server.js\" \"BROWSER=none node scripts/start.js\"",
-    "startDev": "concurrently \"NODE_ENV=development nodemon ./server.js\" \"BROWSER=none node scripts/start.js\"",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "start": "concurrently \"NODE_ENV=production node ./server.js\" \"BROWSER=none react-scripts start\"",
+    "startDev": "concurrently \"NODE_ENV=development nodemon ./server.js\" \"BROWSER=none react-scripts start\"",
+    "now-build": "react-scripts build && mv build dist",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy": "now && now alias"
   },
   "eslintConfig": {
     "extends": "react-app"

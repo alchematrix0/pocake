@@ -5,7 +5,15 @@
     "STRIPE_PRIV_KEY": "@stripe_test_key",
     "AIRTABLE_KEY": "@airtable_key",
     "REACT_APP_STRIPE_PUB_KEY": "@react_app_stripe_pub_key",
-    "MONGODB_URI_PW": "@mongodb_uri_pw"
+    "REACT_APP_DEMO": "on",
+    "MONGODB_URI_PW": "@mongodb_uri_pw",
+    "VAPID_PUBLIC_KEY": "BOrHb0d2ZL2jnqi17RXwuHz359bszFd-TrqrTmdrIWDR_0b_kkDq_inBRnkOvg50v6TDNUMf7jPaAVexa0urJJM",
+    "VAPID_PRIVATE_KEY": "@vapid_private_key"
   },
-  "public": false
+  "public": false,
+  "version": 2,
+  "builds": [
+    { "src": "server.js", "use": "@now/node" },
+    { "src": "package.json", "use": "@now/static-build" }
+  ]
 }

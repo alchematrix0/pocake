@@ -6,9 +6,10 @@ import "./Bulma.css";
 import OK from "./components/OK.js"
 import Order from "./components/order.js"
 import FlavorOption from "./components/flavorOption.js"
+import VesselOption from "./components/vesselOption.js"
 import PaymentForm from "./components/paymentForm.js"
-import { vessels, menu, blankItem, placeholder } from "./menu.js"
-const humanNames = {icecream: "ice cream", sundae: "sundae", milkshake: "milk shake"}
+import { vessels, menu, blankItem } from "./menu.js"
+const humanNames = { icecream: "ice cream", sundae: "sundae", milkshake: "milk shake" }
 
 class App extends Component {
   constructor(props) {
@@ -90,7 +91,7 @@ class App extends Component {
       <div className="App">
         <section className="question hero">
           <img src={logo} className="logo" alt="logo" />
-          <p className="spaced">We"re so glad you"re here</p>
+          <p className="spaced">We're so glad you're here</p>
           <OK
             text="Ice Cream!"
             target="welcome"
@@ -102,7 +103,7 @@ class App extends Component {
         {/* WELCOME */}
         <section id="welcome" className="question">
           <p className="spaced">
-            Let"s start with your name
+            Let's start with your name
           </p>
           <input id="customerName" className="customerName" name="customerName" data-next="type" onKeyUp={this.checkIfEnter} onChange={this.setCustomerName} />
           <br />
@@ -110,7 +111,7 @@ class App extends Component {
             show={this.state.customerName !== "Friend" && this.state.customerName.length > 0}
             target="type"
             scroll={this.scroll}
-            />
+          />
         </section>
 
         {/* TYPE */}
@@ -143,7 +144,6 @@ class App extends Component {
             {menu.filter(i => i.type === (this.state.currentItem.type || "icecream")).map((i, index) => (
               <FlavorOption
                 key={index}
-                placeholder={placeholder}
                 flavor={i}
                 assignFlavor={this.assignFlavor}
                 currentItem={this.state.currentItem}
@@ -156,38 +156,15 @@ class App extends Component {
         {(this.state.currentItem.type === "icecream" || this.state.currentItem.type === "") && (
           <section className="question" id="vessel">
             <p className="spaced">Great choice! Choose a vessel:</p>
-            <div className="columns">
+            <div className="columns gridWrapper">
               {vessels.map((i, index) => (
-                <div key={i.name + index} className={`column is-3-tablet is-2-desktop is-6-mobile`}>
-                  <div
-                    className="card optionCard"
-                    onClick={this.assignVessel}
-                    data-vessel={i.name}
-                  >
-                    <div className="card-image imageOption">
-                      <figure className="image is-square">
-                        <img
-                          className={`${this.state.currentItem.vessel === i.name && "selected"}`}
-                          alt={i.name}
-                          src={i.image}
-                          data-vessel={i.name}
-                        />
-                      </figure>
-                    </div>
-                    <div className="card-content">
-                      <div className="card-header" style={{display: "flex", boxShadow: "none"}}>
-                        <div className="media">
-                          <div className="media-content">
-                            <p style={{color: "rgb(63, 69, 69)", textAlign: this.state.currentItem.type !== "icecream" ? "center": "left"}} data-vessel={i.name}>
-                              {i.humanName}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                <VesselOption
+                  key={index}
+                  index={index}
+                  assignVessel={this.assignVessel}
+                  option={i}
+                  currentItem={this.state.currentItem}
+                />))}
             </div>
           </section>
         )}
@@ -247,7 +224,7 @@ class App extends Component {
                     />
                   </Elements>
               </StripeProvider>
-              ) : null}
+            ) : null}
         </section>
       </div>
     );

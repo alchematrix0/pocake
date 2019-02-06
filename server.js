@@ -17,6 +17,7 @@ const database = {
 
 const Airtable = require("airtable")
 const db = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base("appFhYtU2XMJZRS8e")
+const pushNotifs = require("./dispatchPush.js")
 
 if (process.env.NODE_ENV === "production") {
   console.log("is production, serve statics")
@@ -60,31 +61,16 @@ app.post("/charge", async (req, res) => {
         "Name": req.body.customerName,
         "Order": thisOrder.length > 1 ? thisOrder.reduce((a, b) => a.concat(`\n${b}`)) : thisOrder[0],
         "Order IN": now,
-        "Total": req.body.total,
-        "Notify": ""
-      }
-      let newOrder = {
-        "customerName": req.body.customerName,
-        "id": thisOrderId,
-        "order": thisOrder,
-        "order_in": now,
-        "order_out": false,
-        "total": req.body.total,
-        "notify": ""
-      }
-      console.dir(newOrder)
-      return database.orders.insert(newOrder)
-      .then(insertResult => res.json({status: charge.status, orderId: thisOrderId}))
-      // return db("salt&straw").create(airtableOrder, function (err, record) {
-      //   if (err) {
-      //     console.log("airtable error")
-      //     console.error(err)
-      //     res.json({status: "failed", message: err.message})
-      //   } else {
-      //     console.log("created an entry with id: " + record.getId())
-      //     res.json({status: charge.status, airtableId: record.getId()})
-      //   }
-      // })
+        "Total": req.body.total
+      }, function (err, record) {
+        if (err) {
+          console.log('airtable error')
+          console.error(err)
+        }
+        console.log('created an entry')
+        console.dir(record)
+        res.json({status: charge.status, orderId: record.getId()})
+      })
     }
   } catch (err) {
     console.error(err)
@@ -94,41 +80,70 @@ app.post("/charge", async (req, res) => {
 app.post("/receivePushSubscription", (req, res) => {
   console.log("receivePushSubscription on server")
   console.dir(req.body)
-  return database.orders.findOneAndUpdate({id: req.body.orderId}, {$set: {notify: req.body.subscription.endpoint}})
-  .then(order => res.json(order))
-})
-app.post("/orders", (req, res) => {
-  database.orders.find()
-  .then(orders => res.json(orders))
-})
-app.post("/login", (req, res) => {
-  console.dir(req.body)
-  return database.accounts.findOne({company: req.body.company})
-  .then(user => {
-    async function checkPwMatch () {
-      const match = await bcrypt.compare(req.body.password, user.password);
-      if (match) {
-        console.log("auth success")
-        return database.orders.find({company: req.body.company})
-        .then(orders => res.json({orders, user}))
-      } else {
-        console.log("auth failed")
-        res.json({orders: [], user: null})
-      }
+  db("salt&straw").update(req.body.orderId, { "Notify": JSON.stringify(req.body.subscription) }, function (err, record) {
+    if (err) {
+      console.log('airtable error')
+      console.error(err)
+    } else {
+      console.log('updated an entry')
+      res.json({order: record})
     }
-    checkPwMatch()
+  })
+  // return database.orders.findOneAndUpdate({id: req.body.orderId}, {$set: {notify: req.body.subscription.endpoint}})
+  // .then(order => res.json(order))
+})
+app.post("/markOrderReady", (req, res) => {
+  console.log(`mark order ready`)
+  console.dir(req.body)
+  db("salt&straw").update(req.body.orderId || req.body.id, {"Called": true}, function (err, record) {
+    if (err) console.error(err)
+    else res.json(record)
   })
 })
 app.post("/handleOrderReady", (req, res) => {
   console.log(`handle order ready`)
   console.dir(req.body)
   let now = new Date().toISOString()
-  return database.orders.findOneAndUpdate({id: req.body.orderId}, {$set: {order_out: now}})
-  .then(order => {
-    console.dir(order)
-    console.log("dispatchPushNotification()")
-    res.sendStatus(200)
-  })
+  if (req.body.notify) {
+    console.log(`Send push via Zapier`)
+    try {
+      pushNotifs.sendPush(req.body.notify, `${req.body.name}, great news! Your order of ${req.body.order} is up!`, {})
+      res.sendStatus(200)
+    }
+    catch (err) {
+      console.error(err)
+      res.sendStatus(400)
+    }
+  } else {
+    console.log(`Mark ready [Internal]`)
+    db("salt&straw").find(req.body.orderId, function(err, record) {
+      if (err) {
+        console.error(err)
+        res.sendStatus(204)
+      } else {
+        if (record.get("Notify")) {
+          console.log(`Send push via record: ${record.get("Notify")}`)
+          pushNotifs.sendPush(record.get("Notify"), `${record.get('Name')}, great news! Your order of ${record.get('Order')} is up!`, {})
+          res.json({notify: record.get("Notify")})
+        } else {
+          console.log(`this record has no notify`)
+          res.sendStatus(204)
+        }
+      }
+    })
+  }
+})
+app.get("/testPush", (req, res) => {
+  let sub = {
+    endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gAAAAABcSLUkr1bRSYvLJKiHgieUzFlkxbtsVyoTaSbNrkDpmFPGQ4kp1LjqOYuhbLjrIfaDJnFv_87NiEmTLr7gpMcyEXIPEhO4lYq73e-jQsHrGvm0WV-_rlsDVYdM0_LE05eyPvt9MI4GqRLUvq4wRhV-wjBRuYBMopwWEQEECFctR5zYO0Q',
+    keys: {
+      auth: 'MJJ3hFLTjXK-ELxvkmq3rA',
+      p256dh: 'BNAZvXKSO3FuL5Jr9c2KCZSMEPYKqdfYq4ugHWkbhiHGUS8HI2zd4p2375-wgy0Z1KY9OAu2csm8FNTZFyiU8n8'
+      }
+    }
+  console.dir(sub)
+  pushNotifs.sendPush(sub, `Michel, great news! Your order of vanilla ice cream is up!`, {})
+  res.sendStatus(200)
 })
 app.set("port", process.env.PORT || 8888)
 app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`));

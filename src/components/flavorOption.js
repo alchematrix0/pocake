@@ -4,7 +4,7 @@ const FlavorOption = (props) => (
   <div
     onClick={props.assignFlavor}
     data-flavor={props.flavor.name}
-    className="column is-3-tablet is-2-desktop is-6-mobile">
+    className="column is-3-tablet is-6-mobile">
     <div className={`${props.currentItem.flavor === props.flavor.name && "selected"} card optionCard`}>
       <div className="card-image">
         <figure className="image is-3by4">
