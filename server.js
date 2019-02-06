@@ -11,7 +11,8 @@ const pushNotifs = require("./dispatchPush.js")
 
 console.log('EXECUTING SERVER.JS')
 
-if (process.env.NODE_ENV === "production") {
+// serve statics only if not in NOW
+if (process.env.NODE_ENV === "production" && !process.env.NOW_REGION) {
   console.log("is production, serve statics")
   app.use(express.static(path.resolve(__dirname, "./build")))
   app.get("/", (req, res) => {
@@ -21,6 +22,7 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "./.well-known/apple-developer-merchantid-domain-association"))
   })
 }
+
 app.post("/charge", async (req, res) => {
   console.log("got charge request")
   console.log(typeof req.body)
@@ -130,4 +132,9 @@ app.get("/testPush", (req, res) => {
 })
 app.get("/serverUp", (req, res) => res.json({port: app.get("port")}))
 app.set("port", process.env.PORT || 8888)
-app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`))
+
+if (!process.env.NOW_REGION) {
+  app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`))
+}
+
+module.exports = app

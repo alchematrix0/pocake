@@ -1,6 +1,29 @@
 {
   "alias": "pocake.alchematrix.net",
   "name": "PoCake",
+  "builds": [
+    {"src": "server.js", "use": "@now/node"},
+    { "src": "package.json", "use": "@now/static-build", "config": { "distDir": "build" }  }
+  ],
+  "routes": [
+    {"src": "^/charge", "dest": "server.js" },
+    {"src": "^/receivePushSubscription", "dest": "server.js" },
+    {"src": "^/markOrderReady", "dest": "server.js" },
+    {"src": "^/handleOrderReady", "dest": "server.js" },
+    {"src": "^/testPush", "dest": "server.js" },
+    {"src": "^/serverUp", "dest": "server.js" },
+    {"src": "^/static/(.*)", "dest": "/static/$1"},
+    {"src": "^/favicon.ico", "dest": "/favicon.ico"},
+    {"src": "^/asset-manifest.json", "dest": "/asset-manifest.json"},
+    {"src": "^/manifest.json", "dest": "/manifest.json"},
+    {
+      "src": "^/service-worker.js",
+      "headers": {"cache-control": "s-maxage=0"},
+      "dest": "/service-worker.js"
+    },
+    {"src": "^/precache-manifest.(.*)", "dest": "/precache-manifest.$1"},
+    {"src": "^/(.*)", "dest": "/index.html"}
+  ],
   "env": {
     "STRIPE_PRIV_KEY": "@stripe_test_key",
     "AIRTABLE_KEY": "@airtable_key",
