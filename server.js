@@ -11,7 +11,7 @@ const pushNotifs = require("./dispatchPush.js")
 
 console.log('EXECUTING SERVER.JS')
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" && process.env.TARGET !== "now") {
   console.log("is production, serve statics")
   app.use(express.static(path.resolve(__dirname, "./build")))
   app.get("/", (req, res) => {
@@ -128,6 +128,12 @@ app.get("/testPush", (req, res) => {
   pushNotifs.sendPush(sub, `Michel, great news! Your order of vanilla ice cream is up!`, {})
   res.sendStatus(200)
 })
+
 app.get("/serverUp", (req, res) => res.json({port: app.get("port")}))
-app.set("port", process.env.PORT || 8888)
-app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`))
+
+if (process.env.TARGET === "now") {
+  module.exports = app
+} else {
+  app.set("port", process.env.PORT || 8888)
+  app.listen(app.get("port"), () => console.log(`Listening on port ${app.get("port")}`))
+}
