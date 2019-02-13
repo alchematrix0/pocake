@@ -90,7 +90,6 @@ class PaymentForm extends Component {
     )
     return (
       <div>
-        {this.state.status !== "paid" && (<p>Checkout</p>)}
         {this.state.status === "paid" ? (<h3>Success! Your order will be up shortly</h3>) : activePaymentForm}
         {this.state.status === "failed" && (
           <>

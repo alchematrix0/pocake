@@ -11,7 +11,8 @@
 
 .App {
   /* background-color: #282c34; */
-  background-color: #a8b3c9;
+  /* background-color: #a8b3c9; (salt and straw) */
+  background-color: #fee015;
   font-family: Karla;
   font-size: 18pt;
   padding: 0 5vw;
@@ -20,7 +21,7 @@
 .logo {
   height: auto;
   width: 752px;
-  max-width: 80vw;
+  max-width: 50vw;
   margin: 0 auto;
 }
 
@@ -47,7 +48,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #2298da;
 }
 
 section.question {
@@ -57,9 +58,28 @@ section.question {
   justify-content: center;
   flex-direction: column;
 }
+
+nav#cart {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  margin-bottom: 0;
+  z-index: 1;
+}
+
+nav#cart .panel-block {
+  justify-content: space-between;
+}
+
+span.panel-icon { cursor: pointer; margin: 1px 6px; color: #3273dc; }
+
 div.card-content {
   padding: 0.75rem;
 }
+
+p.greeting { margin: 2rem 0; }
 
 @media screen and (max-width: 600px) {
   section.question.hero { padding: 0; }
@@ -110,6 +130,7 @@ div.card-content {
     margin-bottom: 1em;
   }
 }
+small.itemCost { padding-left: 1rem }
 #flavor-target, .itemGroup, .spaced { padding: 1em 0 }
 
 .OK {
@@ -126,7 +147,8 @@ div.card-content {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 12px 0px;
   padding: 4px 14px 6px;
   min-height: 40px;
-  background-color: rgb(79, 176, 174);
+  /* background-color: rgb(79, 176, 174); S&S */
+  background-color: #2298da;
   color: rgb(255, 255, 255);
   border-radius: 4px;
   font-family: Karla-Bold;
@@ -216,6 +238,10 @@ img.imageOption { cursor: pointer; }
 .selected:not(.imageOption) { border: solid 1px darkorchid; }
 .itemButton.selected { border: solid 2px darkorchid; }
 .imageOption.selected { outline: solid 2px darkorchid; }
+section.question#checkout {
+  justify-content: flex-start;
+  padding-top: 3rem;
+}
 div.checkoutParent {
   max-width: 600px;
   margin: 2em 0 1em 0;
