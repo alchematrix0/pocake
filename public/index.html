@@ -23,8 +23,11 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Presta Coffee - Order Online</title>
-    <script id="stripe-js" src="https://js.stripe.com/v3/" async></script>
+    <!-- link to the SqPaymentForm library -->
+    <script type="text/javascript" src="https://js.squareup.com/v2/paymentform"></script>
+    <script type="text/javascript" src="./sqpaymentform-basic.js"></script>
     <script type="text/javascript" src="./register-push-sw.js"></script>
+    <link rel="stylesheet" src="./sqpayment-styles.css" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

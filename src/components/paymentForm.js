@@ -1,5 +1,4 @@
 import React, { Component } from "react"
-import { PaymentRequestButtonElement, injectStripe } from "react-stripe-elements"
 import Checkout from "./checkout.js"
 import pushMethods from "../utils/push.js"
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { CardElement, injectStripe } from "react-stripe-elements"
+
 class Checkout extends Component {
   constructor(props){
     super(props)

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Elements, StripeProvider } from "react-stripe-elements"
 import logo from "./presta-white.png";
 import "./App.css";
 import "./Bulma.css";
@@ -8,7 +7,7 @@ import Cart from "./components/Cart.js"
 import Order from "./components/order.js"
 import MenuOption from "./components/MenuOption.js"
 import VesselOption from "./components/vesselOption.js"
-import PaymentForm from "./components/paymentForm.js"
+import SquarePaymentForm from "./components/squarePaymentForm.js"
 import { menu, blankItem } from "./menu.js"
 const humanNames = { icecream: "ice cream", sundae: "sundae", milkshake: "milk shake" }
 
@@ -74,12 +73,6 @@ class App extends Component {
   checkIfEnter = (e) => e.key === "Enter" ? this.scroll(false, e.target.dataset.next) : false;
 
   componentDidMount () {
-    if (window.Stripe) { this.setState({stripe: window.Stripe(process.env.REACT_APP_STRIPE_PUB_KEY)})
-    } else {
-      document.querySelector("#stripe-js").addEventListener("load", () => {
-        this.setState({stripe: window.Stripe(process.env.REACT_APP_STRIPE_PUB_KEY)})
-      })
-    }
   }
   render() {
     return (
@@ -140,21 +133,7 @@ class App extends Component {
 
         {/* Checkout */}
         <section className="question" id="checkout">
-
-          {this.state.stripe ?
-            (
-              <StripeProvider stripe={this.state.stripe}>
-                  <Elements>
-                    <PaymentForm
-                      customerName={this.state.customerName}
-                      order={this.state.order.length > 0 ? this.state.order : [this.state.currentItem]}
-                      total={this.state.total}
-                      stripe={this.state.stripe}
-                      cardReady={this.cardReady}
-                    />
-                  </Elements>
-              </StripeProvider>
-            ) : null}
+          <SquarePaymentForm order={this.state.order} />
         </section>
       </div>
     );
