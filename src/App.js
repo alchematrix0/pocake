@@ -2,14 +2,11 @@ import React, { Component } from "react";
 import logo from "./presta-white.png";
 import "./App.css";
 import "./Bulma.css";
-import OK from "./components/OK.js"
-import Cart from "./components/Cart.js"
-import Order from "./components/order.js"
-import MenuOption from "./components/MenuOption.js"
-import VesselOption from "./components/vesselOption.js"
-import SquarePaymentForm from "./components/squarePaymentForm.js"
-import { menu, blankItem } from "./menu.js"
-const humanNames = { icecream: "ice cream", sundae: "sundae", milkshake: "milk shake" }
+import OK from "./components/OK.js";
+import Cart from "./components/Cart.js";
+import MenuOption from "./components/MenuOption.js";
+import SquarePaymentForm from "./components/squarePaymentForm.js";
+import { menu, blankItem } from "./menu.js";
 
 class App extends Component {
   constructor(props) {
@@ -23,19 +20,27 @@ class App extends Component {
       base: 0,
       stripeCardElement: 0,
       isCheckout: false,
-      collapseCart: false
+      collapseCart: false,
+      cartHeight: 0
     }
   }
 
   setCustomerName = (e) => this.setState({customerName: e.target.value})
-
+  setCartHeight = () => this.setState({cartHeight: document.getElementById('cart').offsetHeight + 10})
   addItemToOrder = (e) => {
     let order = this.state.order
-    order.push(menu.find(i => i.name === e.target.dataset.item))
+    console.dir(order)
+    let i = order.findIndex(o => o.name === e.target.dataset.item)
+    console.log(i)
+    if (i !== -1) {
+      order[i].quantity++
+    } else {
+      order.push(menu.find(i => i.name === e.target.dataset.item))
+    }
     this.setState({order, currentItem: blankItem}, this.calculateTotal)
   }
 
-  calculateTotal = () => this.setState({total: this.state.order.map(o => o.cost).reduce((a, b) => a + b, 0)})
+  calculateTotal = () => this.setState({total: this.state.order.map(o => o.cost).reduce((a, b) => a + b, 0)}, () => this.setCartHeight())
 
   calculateCost = (scrollto) => {
     let currentItem = this.state.currentItem
@@ -61,7 +66,7 @@ class App extends Component {
     }, delay)
   }
 
-  toggleCartCollapsed = () => this.setState({collapseCart: !this.state.collapseCart})
+  toggleCartCollapsed = () => this.setState({collapseCart: !this.state.collapseCart}, () => this.setCartHeight())
 
   checkout = () => {
     this.calculateTotal()
@@ -69,11 +74,7 @@ class App extends Component {
   }
 
   cardReady = (el) => this.setState({stripeCardElement: el, isCheckout: true})
-
   checkIfEnter = (e) => e.key === "Enter" ? this.scroll(false, e.target.dataset.next) : false;
-
-  componentDidMount () {
-  }
   render() {
     return (
       <div className="App">
@@ -133,7 +134,13 @@ class App extends Component {
 
         {/* Checkout */}
         <section className="question" id="checkout">
-          <SquarePaymentForm order={this.state.order} />
+          <SquarePaymentForm
+            order={this.state.order}
+            total={this.state.total}
+            customerName={this.state.customerName}
+            offset={this.state.cartHeight || 20}
+            requestCardNonce={this.requestCardNonce}
+          />
         </section>
       </div>
     );

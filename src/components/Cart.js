@@ -27,14 +27,15 @@ const Cart = (props) => props.collapseCart ? (
     {props.items.map((item, index) => (
       <p className="panel-block" key={index}>
         {item.humanName}
+        {item.quantity > 1 ? ` x${item.quantity}` : null}
         <span className="price is-pulled-right">{item.cost}</span>
       </p>
     ))}
     <div className="panel-block">
-        <button onClick={props.checkout} className="button is-link is-outlined is-fullwidth">
-          Ready to pay
-        </button>
-      </div>
+      <button onClick={props.checkout} className="button is-link is-outlined is-fullwidth">
+        Ready to pay
+      </button>
+    </div>
   </nav>
 )
 export default Cart

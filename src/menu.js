@@ -9,88 +9,111 @@ import lavenderCapp from "./img/presta/lavender-capp.png"
 import spicy from "./img/presta/spicy.png"
 import turmeric from "./img/presta/turmeric.png"
 import pourOver from "./img/presta/pour-over.png"
+// NB: name must be unique for the cart to function properly
 export const menu = [
   {
     name: "cappuccino",
     type: "drink",
+    quantity: 1,
     cost: 3.75,
     humanName: "Cappuccino",
     image: cappuccino,
-    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}]
+    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}],
+    activeOption: ''
   }, {
     name: "cherry",
     type: "drink",
+    quantity: 1,
     cost: 4.50,
     humanName: "Cherry Pie Cold Brew",
     image: cherry,
-    options: []
+    options: [],
+    activeOption: ''
   }, {
     name: "coldBrew",
     type: "drink",
+    quantity: 1,
     cost: 3.50,
     humanName: "Cold Brew",
     image: coldBrew,
-    options: []
+    options: [],
+    activeOption: ''
   }, {
     name: "filter",
     type: "drink",
+    quantity: 1,
     cost: 2.50,
     humanName: "Filter Coffee",
     image: filter,
-    options: []
+    options: [],
+    activeOption: ''
   }, {
     name: "cortado",
     type: "drink",
+    quantity: 1,
     cost: 3.50,
     humanName: "Cortado",
     image: cortado,
-    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}]
+    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}],
+    activeOption: ''
   }, {
     name: "espresso",
     type: "drink",
+    quantity: 1,
     cost: 3.50,
     humanName: "Espresso & Tonic",
     image: espresso,
-    options: []
+    options: [],
+    activeOption: ''
   }, {
     name: "latte",
     type: "drink",
+    quantity: 1,
     cost: 4.50,
     humanName: "Latté",
     image: latte,
-    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}]
+    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}],
+    activeOption: ''
   },
   {
     name: "lavenderCapp",
     type: "drink",
+    quantity: 1,
     cost: 4.75,
     humanName: "Lavender Honey Cappuccino",
     image: lavenderCapp,
-    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}]
+    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}],
+    activeOption: ''
   },
   {
     name: "pourOver",
     type: "drink",
+    quantity: 1,
     cost: 4.50,
     humanName: "V60 Pour Over",
     image: pourOver,
-    options: []
+    options: [],
+    activeOption: ''
   },
   {
     name: "spicy",
     type: "drink",
+    quantity: 1,
     cost: 4.50,
     humanName: "Agave Cayenne Cappuccino",
     image: spicy,
-    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}]
+    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}],
+    activeOption: ''
   },
   {
     name: "turmeric",
     type: "drink",
+    quantity: 1,
     cost: 5.00,
     humanName: "Honey Turmeric Chaï Latté",
     image: turmeric,
-    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}]
+    options: [{name: 'oatmilk', humanName: 'Oat milk', cost: 0.75}, {name: 'soymilk', humanName: 'Soy milk', cost: 0.5}],
+    activeOption: ''
   }
 ]
 // export const vessels = [ {name: 'cup', humanName: 'Cup', image: cup}, {name: 'cone', humanName: 'Sugar Cone', image: cone}, {name: 'waffle', humanName: 'Waffle Cone (+.5)', image: waffle} ]

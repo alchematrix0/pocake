@@ -1,15 +1,19 @@
+if (process.env.NODE_ENV !== "production") { require("dotenv").config({path: "./server.env"}) }
 const express = require("express")
 const app = express()
 const path = require("path")
-if (process.env.NODE_ENV !== "production") { require("dotenv").config({path: "./server.env"}) }
-const stripe = require("stripe")(process.env.STRIPE_PRIV_KEY)
 app.use(require("body-parser").json())
-
+app.use(require("body-parser").urlencoded({ extended: true }))
 const Airtable = require("airtable")
 const db = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base("appFhYtU2XMJZRS8e")
 const pushNotifs = require("./dispatchPush.js")
 
 console.log('EXECUTING SERVER.JS')
+
+const square = require("square-connect")
+var squareClient = square.ApiClient.instance;
+var oauth2 = squareClient.authentications['oauth2'];
+oauth2.accessToken = process.env.SQUARE_PRIV_KEY;
 
 if (process.env.NODE_ENV === "production" && process.env.TARGET !== "now") {
   console.log("is production, serve statics")
@@ -21,6 +25,73 @@ if (process.env.NODE_ENV === "production" && process.env.TARGET !== "now") {
     res.sendFile(path.resolve(__dirname, "./.well-known/apple-developer-merchantid-domain-association"))
   })
 }
+function addOrderToAirtable (order, returnRecord) {
+  console.dir(order)
+  db("salt&straw").create({
+    "Name": order.customerName,
+    "Order": order.length > 1 ? order.reduce((a, b) => a.concat(`\n${b}`)) : order[0],
+    "Order IN": new Date().toISOString(),
+    "Total": order.total
+  }, returnRecord)
+}
+app.post("/chargeSquareNonce", async (req, res) => {
+  console.dir(req.body)
+  // create an order here then pass along to the rest of this code and use transaction API to pay for it right away
+  try {
+    const orders_api = new square.OrdersApi();
+    const { order } = await orders_api.createOrder(process.env.SQUARE_LOCATION_ID, {
+      "idempotency_key": parseInt(Math.random() * 10000000).toString(),
+      "line_items": req.body.order.map(item => Object.assign({
+          quantity: item.quantity.toString() || "1",
+          name: item.humanName,
+          variationName: item.activeOption || '',
+          base_price_money: {
+            amount: item.cost * 100,
+            currency: "CAD"
+          }
+        })
+      ),
+      "fulfillments": [
+        {
+          "type": "PICKUP",
+          "state": "PROPOSED",
+          "pickup_details": {
+            "is_square_pickup_order": true,
+            "recipient": { "display_name": req.body.customerName },
+            "schedule_type": "ASAP"
+          }
+        }
+      ]
+    })
+    console.dir(order)
+    const transactions_api = new square.TransactionsApi();
+    const { transaction } = await transactions_api.charge(process.env.SQUARE_LOCATION_ID, {
+      order_id: order.order_id,
+      idempotency_key: req.body.idempotency_key,
+      card_nonce: req.body.card_nonce,
+      amount_money: req.body.amount_money
+    })
+    console.dir(transaction)
+    try {
+      addOrderToAirtable(Object.assign(req.body, {id: transaction.id}), function (err, record) {
+        console.dir(err)
+        console.dir(record)
+        if (record) {
+          let id = record.getId()
+          console.log('got record :: ' + id)
+          res.json(Object.assign({recordId: id, transaction}))
+        } else res.json(transaction)
+      })
+    } catch (error) {
+      console.error(error)
+      res.json(transaction)
+    }
+  } catch (error) {
+    console.error(error)
+    res.status(400).json(error)
+  }
+})
+
 app.post("/charge", async (req, res) => {
   console.log("got charge request")
   console.log(typeof req.body)

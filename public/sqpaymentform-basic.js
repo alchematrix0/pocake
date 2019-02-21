@@ -4,7 +4,6 @@ var applicationId = "sq0idp-QvAf1SYKv1GcCxHovvIHUg";
 // Set the location ID
 var locationId = "CBASEGfUh3nYh1sAUqIu9eu2eS0gAQ";
 
-console.log(applicationId, locationId)
 /*
  * function: requestCardNonce
  *
@@ -15,12 +14,11 @@ console.log(applicationId, locationId)
  * wish to take additional action when the form button is clicked.
  */
 function requestCardNonce(event) {
-
+  console.log('sq payment form requestCardNonce')
   // Don't submit the form until SqPaymentForm returns with a nonce
   event.preventDefault();
-
   // Request a nonce from the SqPaymentForm object
-  paymentForm.requestCardNonce();
+  paymentForm.requestCardNonce()
 }
 
 // Create and initialize a payment form object
@@ -37,10 +35,12 @@ var paymentForm = new SqPaymentForm({
     fontSize: '16px',
     fontFamily: 'Helvetica Neue',
     padding: '16px',
-    color: '#373F4A',
+    // color: '#373F4A',
+    color: 'black',
     backgroundColor: 'transparent',
     lineHeight: '24px',
-    placeholderColor: '#CCC',
+    placeholderColor: '#271414',
+    // placeholderColor: '#CCC',
     _webkitFontSmoothing: 'antialiased',
     _mozOsxFontSmoothing: 'grayscale'
   }],
@@ -154,6 +154,7 @@ var paymentForm = new SqPaymentForm({
      * Triggered when: SqPaymentForm completes a card nonce request
      */
     cardNonceResponseReceived: function (errors, nonce, cardData) {
+      console.log('received nonce response')
       if (errors) {
         // Log errors from nonce generation to the Javascript console
         console.log("Encountered errors:");
@@ -165,9 +166,12 @@ var paymentForm = new SqPaymentForm({
         return;
       }
       // Assign the nonce value to the hidden form field
+      console.log(nonce)
+      console.dir(cardData)
       document.getElementById('card-nonce').value = nonce;
+      return nonce
       // POST the nonce form to the payment processing page
-      document.getElementById('nonce-form').submit();
+      // document.getElementById('nonce-form').submit();
 
     },
 
@@ -221,6 +225,8 @@ var paymentForm = new SqPaymentForm({
 
 document.addEventListener("DOMContentLoaded", function(event) {
   if (SqPaymentForm.isSupportedBrowser()) {
+    console.log('isSupported, building form')
+    window.paymentForm = paymentForm
     paymentForm.build();
     paymentForm.recalculateSize();
   }

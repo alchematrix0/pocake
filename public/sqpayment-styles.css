@@ -31,13 +31,11 @@ fieldset {
   border: 0;
 }
 
-
 #form-container {
   position: relative;
-  width: 380px;
-  margin: 0 auto;
+  max-width: 380px;
+  margin: 0 auto 40px auto;
   top: 50%;
-  transform: translateY(-50%);
 }
 
 .label {
@@ -62,7 +60,8 @@ fieldset {
 /* Define how SqPaymentForm iframes should look */
 .sq-input {
   box-sizing: border-box;
-  border: 1px solid #E0E2E3;
+  border: 1px solid black;
+  /* border: 1px solid #E0E2E3; */
   border-radius: 4px;
   outline-offset: -2px;
   display: inline-block;
@@ -94,7 +93,8 @@ fieldset {
   width: 100%;
   height: 56px;
   margin-top: 10px;
-  background: #4A90E2;
+  /* background: #4A90E2; */
+  background: #2298da;
   border-radius: 4px;
   cursor: pointer;
   display: block;
@@ -139,7 +139,7 @@ fieldset {
   margin: 24px 0 24px;
   background-image: url("https://masterpass.com/dyn/img/acc/global/mp_mark_hor_wht.svg");
   background-color: black;
-  background-size: 100% 60%;
+  background-size: 60% 70%;
   background-repeat: no-repeat;
   background-position: calc((100% - 32px) / 2) 50%;
   border-radius: 4px;
@@ -192,7 +192,7 @@ fieldset {
 #sq-walletbox-divider {
   height: 24px;
   margin: 24px 0 24px;
-  color: #CCC;
+  color: black;
   font-size: 14px;
   font-weight: bold;
   line-height: 24px;
