@@ -19,10 +19,10 @@
 .env.production.local
 server.env
 ignore_*
-.env
 .well-known/
 apple-developer-merchantid-domain-association
 src/.env
+.env
 
 npm-debug.log*
 yarn-debug.log*
