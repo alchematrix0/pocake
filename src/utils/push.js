@@ -19,7 +19,7 @@ const pushMethods = {
     })
     .then(function(permissionResult) {
       if (permissionResult !== "granted") {
-        throw new Error(`We weren"t granted permission. User selected ${permissionResult}`);
+        console.log(`We weren"t granted permission. User selected ${permissionResult}`)
       } else {
         return permissionResult
       }
