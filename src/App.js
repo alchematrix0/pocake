@@ -171,7 +171,7 @@ class App extends Component {
         {/* SCOOPS */}
         {this.state.currentItem.type === "icecream" && (
           <section className="question" id="scoops">
-            <p>
+            <p style={{marginBottom: '1em'}}>
               And how many scoops?
             </p>
             <p>
