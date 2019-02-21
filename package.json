@@ -1,5 +1,5 @@
 {
-  "name": "pocake",
+  "name": "pocake-presta",
   "version": "0.1.0",
   "license": "MIT",
   "private": false,
@@ -13,6 +13,7 @@
     "path": "^0.12.7",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-lazyload": "^2.5.0",
     "react-scripts": "2.1.2",
     "react-stripe-elements": "^2.0.1",
     "square-connect": "^2.20190213.0",

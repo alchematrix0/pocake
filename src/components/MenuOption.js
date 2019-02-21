@@ -1,4 +1,5 @@
-import React from "react"
+import React from "react";
+import LazyLoad from 'react-lazyload';
 
 const MenuOption = (props) => (
   <div
@@ -9,12 +10,14 @@ const MenuOption = (props) => (
     <div className={`${props.currentItem.name === props.item.name && "selected"} card optionCard`}>
       <div className="card-image">
         <figure className="image is-3by4">
-          <img
-            className="card-image imageOption"
-            alt={props.item.name}
-            src={props.item.image}
-            data-item={props.item.name}
-          />
+          <LazyLoad height="100%" once offset={100}>
+            <img
+              className="card-image imageOption"
+              alt={props.item.name}
+              src={props.item.image}
+              data-item={props.item.name}
+            />
+          </LazyLoad>
         </figure>
       </div>
       <div className="card-content" data-item={props.item.name}>

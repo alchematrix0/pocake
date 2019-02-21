@@ -14,13 +14,12 @@
   /* background-color: #a8b3c9; (salt and straw) */
   background-color: #fee015;
   font-family: Karla;
-  font-size: 18pt;
+  font-size: 1.5rem;
   padding: 0 5vw;
 }
 
 .logo {
   height: auto;
-  width: 752px;
   max-width: 50vw;
   margin: 0 auto;
 }
@@ -69,17 +68,11 @@ nav#cart {
   z-index: 1;
 }
 
-nav#cart .panel-block {
-  justify-content: space-between;
-}
-
+nav#cart .panel-block { justify-content: space-between; }
 span.panel-icon { cursor: pointer; margin: 1px 6px; color: #3273dc; }
-
-div.card-content {
-  padding: 0.75rem;
-}
-
+div.card-content { padding: 0.75rem; }
 p.greeting { margin: 2rem 0; }
+p.flavorName { font-size: 1rem; }
 
 @media screen and (max-width: 600px) {
   section.question.hero { padding: 0; }
@@ -270,3 +263,5 @@ div.checkoutParent {
   opacity: 1;
   transition: opacity .3s;
 }
+
+@import "./sq-payment-styles.css"
