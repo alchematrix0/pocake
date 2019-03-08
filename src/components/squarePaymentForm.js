@@ -10,7 +10,8 @@ export default class squarePaymentForm extends Component {
       SqPaymentFormLoaded: false,
       error: false,
       processing: false,
-      success: false
+      success: false,
+      order: props.order
     }
   }
   requestCardNonce = (event) => {
@@ -111,17 +112,15 @@ export default class squarePaymentForm extends Component {
               currencyCode: "USD",
               countryCode: "US",
               total: {
-                label: "MERCHANT NAME",
-                amount: "100",
+                label: "Presta Coffee",
+                amount: this.state.order.map(i => Number(i.cost) * Number(i.quantity)).reduce((a, b) => a + b, 0),
                 pending: false
               },
-              lineItems: [
-                {
-                  label: "Subtotal",
-                  amount: "100",
-                  pending: false
-                }
-              ]
+              lineItems: this.state.order.map(i => Object.assign({}, {
+                label: i.humanName,
+                amount: (Number(i.cost) * Number(i.quantity)).toFixed(2),
+                pending: false
+              }))
             }
           },
 
@@ -276,7 +275,7 @@ export default class squarePaymentForm extends Component {
               </fieldset>
             )}
             {this.state.success ? (
-              <p>Success! Your order will be up shortly.</p>
+              <h4>Success! Your order will be up shortly.</h4>
             ) : (
               <button type="button" id="sq-creditcard" className="button-credit-card" onClick={this.requestCardNonce}>
                 {this.state.processing ? 'Processing...' : 'Pay with credit card'}

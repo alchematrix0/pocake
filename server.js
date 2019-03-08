@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV !== "production") { require("dotenv").config({path: "./server.env"}) }
+if (process.env.TARGET !== "now") { require("dotenv").config({path: "./server.env"}) }
 const express = require("express")
 const app = express()
 const path = require("path")
@@ -21,17 +21,18 @@ if (process.env.NODE_ENV === "production" && process.env.TARGET !== "now") {
   app.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "./build/index.html"))
   })
-  app.get("/.well-known/apple-developer-merchantid-domain-association", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./.well-known/apple-developer-merchantid-domain-association"))
-  })
 }
-function addOrderToAirtable (order, returnRecord) {
-  console.dir(order)
-  db("salt&straw").create({
-    "Name": order.customerName,
-    "Order": order.length > 1 ? order.reduce((a, b) => a.concat(`\n${b}`)) : order[0],
+app.get("/.well-known/apple-developer-merchantid-domain-association", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./.well-known/apple-developer-merchantid-domain-association"))
+})
+function addOrderToAirtable (body, returnRecord) {
+  console.dir(body)
+  db("presta").create({
+    "Name": body.customerName,
+    "Order": body.order.length > 1 ? body.order.map(o => `${o.quantity}x ${o.name}`).reduce((a, b) => a.concat(`\n${b}`)) : body.order[0].name,
     "Order IN": new Date().toISOString(),
-    "Total": order.total
+    "Total": body.total,
+    "URL": "https://pocake-presta.alchematrix.net/"
   }, returnRecord)
 }
 app.post("/chargeSquareNonce", async (req, res) => {
@@ -110,11 +111,12 @@ app.post("/charge", async (req, res) => {
           `${o.scoops} scoops of ${o.flavor} in a ${o.vessel}` :
           `${o.flavor} ${o.type}`)
       console.dir(thisOrder)
-      return db("salt&straw").create({
+      return db("presta").create({
         "Name": req.body.customerName,
         "Order": thisOrder.length > 1 ? thisOrder.reduce((a, b) => a.concat(`\n${b}`)) : thisOrder[0],
         "Order IN": now,
-        "Total": req.body.total
+        "Total": req.body.total,
+        "URL": "https://pocake-presta.alchematrix.net/"
       }, function (err, record) {
         if (err) {
           console.log('airtable error')
@@ -133,7 +135,7 @@ app.post("/charge", async (req, res) => {
 app.post("/receivePushSubscription", (req, res) => {
   console.log("receivePushSubscription on server")
   console.dir(req.body)
-  db("salt&straw").update(req.body.orderId, { "Notify": JSON.stringify(req.body.subscription) }, function (err, record) {
+  db("presta").update(req.body.orderId, { "Notify": JSON.stringify(req.body.subscription) }, function (err, record) {
     if (err) {
       console.log('airtable error')
       console.error(err)
@@ -146,7 +148,7 @@ app.post("/receivePushSubscription", (req, res) => {
 app.post("/markOrderReady", (req, res) => {
   console.log(`mark order ready`)
   console.dir(req.body)
-  db("salt&straw").update(req.body.orderId || req.body.id, {"Called": true}, function (err, record) {
+  db("presta").update(req.body.orderId || req.body.id, {"Called": true}, function (err, record) {
     if (err) console.error(err)
     else res.json(record)
   })
@@ -154,9 +156,12 @@ app.post("/markOrderReady", (req, res) => {
 // route to artificially mark an order ready for demo purposes
 // this route is hit by Zapier after markOrderReady is called on a 5 minute poll. simulates order being made and called out.
 app.post("/handleOrderReady", (req, res) => {
+  console.log('handleOrderReady')
   console.dir(req.body)
   let now = new Date().toISOString()
   if (req.body.notify) {
+    console.log('handle ready, we have notify')
+    console.dir(req.body.notify)
     // if Airtable had the notify set when this webhook was fired
     try {
       pushNotifs.sendPush(req.body.notify, `${req.body.name}, great news! Your order of ${req.body.order} is up!`, {})
@@ -168,8 +173,8 @@ app.post("/handleOrderReady", (req, res) => {
     }
   } else {
     // Airtable didn't have the push sub at the time, let's check for it now.
-    console.log(`Mark ready [Internal]`)
-    db("salt&straw").find(req.body.orderId, function(err, record) {
+    console.log(`Mark ready [Internal], retrieve Notify`)
+    db("presta").find(req.body.orderId, function(err, record) {
       if (err) {
         console.error(err)
         res.sendStatus(204)
