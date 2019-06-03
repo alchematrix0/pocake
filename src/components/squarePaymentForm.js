@@ -219,9 +219,13 @@ export default class squarePaymentForm extends Component {
       if (serverResponse.transaction) {
         this.setState({processing: false, success: true})
         // At this point, we have created the charge and will request push for when the order is called out
-        pushMethods.requestPushPermissionAndSubscribe(serverResponse.recordId)
-        // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
-        pushMethods.triggerOrderReady(serverResponse.recordId)
+        return pushMethods.requestPushPermissionAndSubscribe(serverResponse.recordId)
+        .then((data) => {
+          console.log('now trigger from SQ Payment form')
+          console.dir(data)
+          // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
+          pushMethods.triggerOrderReady(serverResponse.recordId, data.subscription)
+        })
       } else {
         this.setState({processing: false})
         if (serverResponse.error) {
@@ -275,7 +279,13 @@ export default class squarePaymentForm extends Component {
               </fieldset>
             )}
             {this.state.success ? (
-              <h4>Success! Your order will be up shortly.</h4>
+              <section className="hero is-medium">
+                <div className="hero-body">
+                  <h4 className="title is-spaced">Success! Your order will be up shortly.</h4>
+                  <h6 className="subtitle is-spaced">This app is in demo mode. Expect a notification in T-minus 00:10 <span role="img" aria-label="pointing right">👉 </span></h6>
+                  <p>Like what you see? Order a version for you website today: <a href="mailto:alchematrix0@gmail.com">alchematrix0@gmail.com</a></p>
+                </div>
+              </section>
             ) : (
               <button type="button" id="sq-creditcard" className="button-credit-card" onClick={this.requestCardNonce}>
                 {this.state.processing ? 'Processing...' : 'Pay with credit card'}

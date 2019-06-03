@@ -7872,7 +7872,7 @@ label.panel-block:hover {
   margin-bottom: 1.5rem;
 }
 
-.tabs a {
+.tabs a, .tabs span {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -7891,13 +7891,19 @@ label.panel-block:hover {
   vertical-align: top;
 }
 
-.tabs a:hover {
+.tabs a:hover, .tabs span:hover {
   border-bottom-color: #363636;
   color: #363636;
+  cursor: pointer;
 }
 
 .tabs li {
   display: block;
+}
+
+.tabs li.is-active span {
+  border-bottom-color: black;
+  border-bottom-width: 2px;
 }
 
 .tabs li.is-active a {

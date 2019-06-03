@@ -1,6 +1,6 @@
 {
-    "name": "Presta",
-    "short_name": "Presta",
+    "name": "Nemesis",
+    "short_name": "Nemesis",
     "icons": [
         {
             "src": "./icons/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#2298da",
-    "background_color": "#2298da",
+    "theme_color": "#febf62",
+    "background_color": "#febf62",
     "display": "standalone"
 }

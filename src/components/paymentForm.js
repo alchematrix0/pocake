@@ -79,7 +79,7 @@ class PaymentForm extends Component {
     ) : (
       <Checkout
         customerName={this.props.customerName}
-        order={this.props.order.length > 0 ? this.props.order : [this.props.currentItem]}
+        order={this.props.order}
         total={this.props.total}
         stripe={this.props.stripe}
         cardReady={this.props.cardReady}

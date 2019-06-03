@@ -26,7 +26,6 @@ app.get("/.well-known/apple-developer-merchantid-domain-association", (req, res)
   res.sendFile(path.resolve(__dirname, "./.well-known/apple-developer-merchantid-domain-association"))
 })
 function addOrderToAirtable (body, returnRecord) {
-  console.dir(body)
   db("presta").create({
     "Name": body.customerName,
     "Order": body.order.length > 1 ? body.order.map(o => `${o.quantity}x ${o.name}`).reduce((a, b) => a.concat(`\n${b}`)) : body.order[0].name,
@@ -36,7 +35,6 @@ function addOrderToAirtable (body, returnRecord) {
   }, returnRecord)
 }
 app.post("/chargeSquareNonce", async (req, res) => {
-  console.dir(req.body)
   // create an order here then pass along to the rest of this code and use transaction API to pay for it right away
   try {
     const orders_api = new square.OrdersApi();
@@ -64,7 +62,6 @@ app.post("/chargeSquareNonce", async (req, res) => {
         }
       ]
     })
-    console.dir(order)
     const transactions_api = new square.TransactionsApi();
     const { transaction } = await transactions_api.charge(process.env.SQUARE_LOCATION_ID, {
       order_id: order.order_id,
@@ -72,11 +69,8 @@ app.post("/chargeSquareNonce", async (req, res) => {
       card_nonce: req.body.card_nonce,
       amount_money: req.body.amount_money
     })
-    console.dir(transaction)
     try {
       addOrderToAirtable(Object.assign(req.body, {id: transaction.id}), function (err, record) {
-        console.dir(err)
-        console.dir(record)
         if (record) {
           let id = record.getId()
           console.log('got record :: ' + id)
@@ -95,8 +89,6 @@ app.post("/chargeSquareNonce", async (req, res) => {
 
 app.post("/charge", async (req, res) => {
   console.log("got charge request")
-  console.log(typeof req.body)
-  console.dir(req.body)
   let now = new Date().toISOString()
   try {
     let charge = await stripe.charges.create({
@@ -133,39 +125,40 @@ app.post("/charge", async (req, res) => {
   }
 })
 app.post("/receivePushSubscription", (req, res) => {
-  console.log("receivePushSubscription on server")
-  console.dir(req.body)
   db("presta").update(req.body.orderId, { "Notify": JSON.stringify(req.body.subscription) }, function (err, record) {
     if (err) {
       console.log('airtable error')
       console.error(err)
+      res.json(err)
     } else {
       console.log('updated an entry')
-      res.json({order: record})
+      res.json({order: record, subscription: req.body.subscription})
     }
   })
 })
 app.post("/markOrderReady", (req, res) => {
   console.log(`mark order ready`)
-  console.dir(req.body)
   db("presta").update(req.body.orderId || req.body.id, {"Called": true}, function (err, record) {
     if (err) console.error(err)
     else res.json(record)
   })
 })
+app.post("/dispatchPush", (req, res) => {
+  console.log('dispatchPush')
+  return pushNotifs.sendPush(req.body.subscription, `Your order is ready!`, {}).then(data => res.sendStatus(200))
+})
 // route to artificially mark an order ready for demo purposes
 // this route is hit by Zapier after markOrderReady is called on a 5 minute poll. simulates order being made and called out.
 app.post("/handleOrderReady", (req, res) => {
   console.log('handleOrderReady')
-  console.dir(req.body)
-  let now = new Date().toISOString()
   if (req.body.notify) {
     console.log('handle ready, we have notify')
-    console.dir(req.body.notify)
     // if Airtable had the notify set when this webhook was fired
     try {
-      pushNotifs.sendPush(req.body.notify, `${req.body.name}, great news! Your order of ${req.body.order} is up!`, {})
-      res.sendStatus(200)
+      return pushNotifs.sendPush(req.body.notify, `${req.body.name || 'Hey there'}, great news! Your order is up!`, {})
+      .then(done => {
+        res.sendStatus(200)
+      })
     }
     catch (err) {
       console.error(err)
@@ -193,16 +186,26 @@ app.post("/handleOrderReady", (req, res) => {
 })
 // util route to check if push is working
 app.get("/testPush", (req, res) => {
-  let sub = {
-    endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gAAAAABcSLUkr1bRSYvLJKiHgieUzFlkxbtsVyoTaSbNrkDpmFPGQ4kp1LjqOYuhbLjrIfaDJnFv_87NiEmTLr7gpMcyEXIPEhO4lYq73e-jQsHrGvm0WV-_rlsDVYdM0_LE05eyPvt9MI4GqRLUvq4wRhV-wjBRuYBMopwWEQEECFctR5zYO0Q',
-    keys: {
-      auth: 'MJJ3hFLTjXK-ELxvkmq3rA',
-      p256dh: 'BNAZvXKSO3FuL5Jr9c2KCZSMEPYKqdfYq4ugHWkbhiHGUS8HI2zd4p2375-wgy0Z1KY9OAu2csm8FNTZFyiU8n8'
-      }
+  let sub = JSON.stringify({
+    "endpoint": "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABcgpCshYZ571W64g2XnysEHloIcL-bAryFfdxrqLeLLv3AmwNU8ZHEPEMyqC9uEx1OscH1e-_1TWiNoWb1t1Kj8dKnMz8_ZnWXX6s1R6Mx1oXC6Ex8aTjFw-62QUzjAULiMNPqaJaB0Br9DQLjww_ztBw1YXXN14BxcsFi6hhJ2TQNo0w",
+    "keys": {
+      "auth":"cVSBa-qrWtQUQ89iljQpug",
+      "p256dh":"BEWPTwboiMxLxlXsOEMBlBruZ7XIJEE-WOv-3Tl30hqfSLhV2oSpxdrORNWFjXsCtZU73Gl-bCRFJ9R8rMjtGXw"
     }
-  console.dir(sub)
+  })
   pushNotifs.sendPush(sub, `Michel, great news! Your order of vanilla ice cream is up!`, {})
   res.sendStatus(200)
+})
+
+app.post('/receivePush', (req, res) => {
+  console.log(`receivePush ${typeof req.body.endpoint} ${typeof req.body.keys}`)
+  return pushNotifs.sendPush(req.body, `Michel, your order is ready!`, null, true)
+  .then(done => {
+    res.sendStatus(200)
+  })
+  .catch(err => {
+    res.sendStatus(404)
+  })
 })
 
 app.get("/serverUp", (req, res) => res.json({port: app.get("port")}))

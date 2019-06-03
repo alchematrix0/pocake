@@ -12,16 +12,11 @@
 .App {
   /* background-color: #282c34; */
   /* background-color: #a8b3c9; (salt and straw) */
-  background-color: #fee015;
+  /* background-color: #fee015; Presta */
+  background-color: #febf62;
   font-family: Karla;
   font-size: 1.5rem;
   padding: 0 5vw;
-}
-
-.logo {
-  height: auto;
-  max-width: 50vw;
-  margin: 0 auto;
 }
 
 .hero {
@@ -221,6 +216,7 @@ input.customerName {
   line-height: 38px;
   -moz-osx-font-smoothing: grayscale;
 }
+.tabs ul.noBorder { border-bottom: none; }
 section#addItem p:first-child { margin-bottom: 0; }
 img.imageOption { cursor: pointer; }
 .scoop { border-radius: 100%; cursor: pointer; }

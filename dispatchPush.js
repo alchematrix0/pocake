@@ -1,38 +1,33 @@
 const webPush = require("web-push")
+webPush.setVapidDetails(
+  'mailto:alchematrix0@gmail.com',
+  process.env.VAPID_PUBLIC_KEY_PRESTA,
+  process.env.VAPID_PRIVATE_KEY_PRESTA
+)
+
 module.exports = {
-  sendPush: function (subscription, payload, options = {}) {
-    if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+  sendPush: function (subscription, payload, options = {}, isJson = false) {
+    console.log(`call sendPush from dispatchPush.js`)
+    if (!process.env.VAPID_PUBLIC_KEY_PRESTA || !process.env.VAPID_PRIVATE_KEY_PRESTA) {
       console.log("You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY "+
         "environment variables. You can use the following ones:")
       console.log(webPush.generateVAPIDKeys())
       return
     }
-    webPush.setVapidDetails(
-      'mailto:alchematrix0@gmail.com',
-      process.env.VAPID_PUBLIC_KEY,
-      process.env.VAPID_PRIVATE_KEY
-    )
-    let ps = JSON.parse(subscription)
+    let ps = isJson ? subscription : JSON.parse(subscription)
     const pushSubscription = {
       endpoint: ps.endpoint,
       keys: ps.keys
     }
-    options = {
-      TTL: 24 * 60 * 60,
-      vapidDetails: {
-        subject: 'mailto:alchematrix0@gmail.com',
-        publicKey: process.env.VAPID_PUBLIC_KEY,
-        privateKey: process.env.VAPID_PRIVATE_KEY
-      }
-    }
-    webPush.sendNotification(pushSubscription, payload, options)
+    console.log(`call webPush.sendNotification to ${pushSubscription.endpoint}`)
+    return webPush.sendNotification(pushSubscription, payload)
     .then(function(data) {
-      console.dir(data)
-      return true
+      console.log('push sent')
+      return data
     })
     .catch(function(error) {
       console.error(error)
-      return false
+      return error
     })
   }
 }

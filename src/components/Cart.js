@@ -28,7 +28,16 @@ const Cart = (props) => props.collapseCart ? (
       <p className="panel-block" key={index}>
         {item.humanName}
         {item.quantity > 1 ? ` x${item.quantity}` : null}
-        <span className="price is-pulled-right">{item.cost}</span>
+        {item.options.length > 0 && (
+          <span className="select cartOption">
+            <select onChange={props.handleOptionSelect} data-item={item.name}>
+              {item.options.map(o => (
+                <option key={o.name} value={o.name}>{o.humanName}{o.cost ? ` +${o.cost.toFixed(2)}$` : ``}</option>
+              ))}
+            </select>
+          </span>
+        )}
+        <span className="price is-pulled-right">{item.cost * item.quantity}</span>
       </p>
     ))}
     <div className="panel-block">

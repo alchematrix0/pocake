@@ -1,5 +1,5 @@
 {
-  "name": "pocake-presta",
+  "name": "pocake-nemesis",
   "version": "0.1.0",
   "license": "MIT",
   "private": false,
@@ -14,7 +14,7 @@
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-lazyload": "^2.5.0",
-    "react-scripts": "2.1.2",
+    "react-scripts": "3.0.0",
     "react-stripe-elements": "^2.0.1",
     "square-connect": "^2.20190213.0",
     "stripe": "^6.20.0",
