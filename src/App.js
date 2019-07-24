@@ -12,7 +12,6 @@ import SquarePaymentForm from "./components/squarePaymentForm.js";
 import "./App.css";
 import "./Bulma.css";
 
-
 class App extends Component {
   constructor(props) {
     super(props)
