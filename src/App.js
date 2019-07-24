@@ -1,15 +1,17 @@
 import React, { Component } from "react";
-import logo from "./img/nemesis/nemesisLogo.jpg";
+import { config } from "./config.js";
+import { menu } from "./menu.js";
+import logo from "./img/nemesis/logo.jpg";
 import stay from "./img/nemesis/stay.jpg";
 import togo from "./img/nemesis/togo.jpg";
-import "./App.css";
-import "./Bulma.css";
 import OK from "./components/OK.js";
 import Cart from "./components/Cart.js";
 import MenuOption from "./components/MenuOption.js";
 import ChoiceOption from "./components/ChoiceOption.js";
 import SquarePaymentForm from "./components/squarePaymentForm.js";
-import { menu } from "./menu.js";
+import "./App.css";
+import "./Bulma.css";
+
 
 class App extends Component {
   constructor(props) {
@@ -89,8 +91,9 @@ class App extends Component {
   }
 
   render() {
+    console.dir(config)
     return (
-      <div className="App">
+      <div className="App" style={{ backgroundColor: config.colors.background}}>
         <section className="question hero">
           <div className="columns is-multiline is-mobile is-centered">
             <div className="logoAndText column is-4-desktop is-4-tablet is-12-mobile">
