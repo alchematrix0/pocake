@@ -13,37 +13,12 @@
   /* background-color: #282c34; */
   /* background-color: #a8b3c9; (salt and straw) */
   /* background-color: #fee015; Presta */
-  background-color: #febf62;
   font-family: Karla;
   font-size: 1.5rem;
   padding: 0 5vw;
 }
 
-.hero {
-  text-align: center;
-}
-
-.App-logo {
-  height: 10vmin;
-  margin-top: 5vh;
-}
-
-.App-header {
-  /* background-color: #282c34; */
-  text-align: center;
-  background-color: #a8b3c9;
-  min-height: 20vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #2298da;
-}
+.hero { text-align: center; }
 
 section.question {
   min-height: 100vh;
