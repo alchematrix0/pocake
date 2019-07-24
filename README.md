@@ -1,12 +1,13 @@
 # PoCake Demo for Salt and Straw
+
 Progressive web app for short order restaurants
 
-This demo was made for Salt and Straw, an awesome ice cream shop who always have a crazy line up!
+This demo was made for Salt and Straw, and then ported to Presta and Nemesis, two coffee shops well worth checking out!
 
 #### Development
-`yarn && yarn startDev` will kick off the dev server front (port 3000) and back (port 8888)
+`yarn && yarn startDev` will install deps and kick off the dev server front (port 3000) and back (port 8888)
 
-NB: you will need to create a `server.env` file with the following values:
+NB: you will need to create a `server.env` file with at least the following values:
 
 ```
 STRIPE_PRIV_KEY=<stripe priv key>
