@@ -209,6 +209,8 @@ var paymentForm = new SqPaymentForm({
         case 'postalCodeChanged':
           /* HANDLE AS DESIRED */
           break;
+        default:
+          break;
       }
     },
 
