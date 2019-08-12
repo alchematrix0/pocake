@@ -183,6 +183,7 @@ export default class squarePaymentForm extends Component {
           paymentFormLoaded: function () {
             /* HANDLE AS DESIRED */
             console.log("The form loaded!");
+            window.paymentForm.recalculateSize();
           }
         }
       });
@@ -191,7 +192,7 @@ export default class squarePaymentForm extends Component {
         console.log('isSupported from component, building form')
         window.paymentForm = this.paymentForm
         this.paymentForm.build();
-        this.paymentForm.recalculateSize();
+        // this.paymentForm.recalculateSize();
       }
     }
     document.getElementsByTagName("head")[0].appendChild(sqPaymentScript);
