@@ -23,6 +23,7 @@
   "scripts": {
     "start": "concurrently \"NODE_ENV=production node ./server.js\" \"BROWSER=none react-scripts start\"",
     "startDev": "concurrently \"NODE_ENV=development nodemon ./server.js --ignore ./src\" \"BROWSER=none react-scripts start\"",
+    "ngrok": "ngrok http 3000 --host-header='localhost:3000'",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
