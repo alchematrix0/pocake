@@ -12,7 +12,7 @@ const ChoiceOption = (props) => (
     <div className="card optionCard">
       <div className="card-image">
         <figure className="image is-3by4">
-          <LazyLoad once offset={300} placeholder={placeholder()}>
+          <LazyLoad offset={300} placeholder={placeholder()}>
             <img
               className="card-image imageOption"
               alt={props.text}
