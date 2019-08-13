@@ -1,30 +1,14 @@
-console.log(`custom=-w.js`)
+console.log(`custom-sw.js`)
 self.addEventListener('push', (e) => {
+  console.log('[custom-sw] Event listener push event!!!')
+  var message = e.data ? e.data.text() : 'Your order from Nemesis is ready!'
   e.waitUntil(
     self.registration.showNotification('Order up!', {
-      body: 'Your order from Presta is ready!',
+      body: message || 'Your order from Nemesis is ready!',
       icon: './icons/favicon.ico',
     })
   )
 })
-self.addEventListener('message', (e) => {
-  console.dir(e.data)
-})
 self.addEventListener('install', function (e) {
-  console.log('Custom SW is installed :: ' + Math.random())
+  console.log('Custom-SW is installed :: ' + Math.random())
 })
-
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      if (response) {
-        return response;
-      }
-      return fetch(event.request).then(function(response) {
-        return response;
-      }).catch(function(error) {
-        throw error;
-      });
-    })
-  );
-});

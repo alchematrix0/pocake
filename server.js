@@ -31,10 +31,11 @@ function addOrderToAirtable (body, returnRecord) {
     "Order": body.order.length > 1 ? body.order.map(o => `${o.quantity}x ${o.name}`).reduce((a, b) => a.concat(`\n${b}`)) : body.order[0].name,
     "Order IN": new Date().toISOString(),
     "Total": body.total,
-    "URL": "https://pocake-presta.alchematrix.net/"
+    "URL": "https://nemesis.alchematrix.net/"
   }, returnRecord)
 }
 app.post("/chargeSquareNonce", async (req, res) => {
+  console.log(`chargeSquareNonce`)
   // create an order here then pass along to the rest of this code and use transaction API to pay for it right away
   try {
     const orders_api = new square.OrdersApi();
@@ -78,10 +79,12 @@ app.post("/chargeSquareNonce", async (req, res) => {
         } else res.json(transaction)
       })
     } catch (error) {
+      console.log('error2 in chargeSquareNonce on server')
       console.error(error)
       res.json(transaction)
     }
   } catch (error) {
+    console.log('error in chargeSquareNonce on server')
     console.error(error)
     res.status(400).json(error)
   }
@@ -125,6 +128,7 @@ app.post("/charge", async (req, res) => {
   }
 })
 app.post("/receivePushSubscription", (req, res) => {
+  console.log("receivePushSubscription")
   db("presta").update(req.body.orderId, { "Notify": JSON.stringify(req.body.subscription) }, function (err, record) {
     if (err) {
       console.log('airtable error')
@@ -144,8 +148,31 @@ app.post("/markOrderReady", (req, res) => {
   })
 })
 app.post("/dispatchPush", (req, res) => {
-  console.log('dispatchPush')
-  return pushNotifs.sendPush(req.body.subscription, `Your order is ready!`, {}).then(data => res.sendStatus(200))
+  console.log('dispatchPush req.body:')
+  console.dir(req.body)
+  if (req.body.orderId) {
+    console.log('yes req.body.orderId')
+    db("presta").find(req.body.orderId, function(err, record) {
+      if (err) {
+        console.error(err)
+        res.sendStatus(204)
+      } else {
+        if (record.get("Notify")) {
+          console.log(`Send push via record: ${record.get("Notify")}`)
+          pushNotifs.sendPush(req.body.subscription || record.get("Notify"), `${record.get('Name')}, great news! Your order of ${record.get('Order')} is up!`, {}).then(data => res.sendStatus(200))
+          // res.json({notify: record.get("Notify")})
+        } else {
+          pushNotifs.sendPush(req.body.subscription, `${record.get('Name') || 'Buddy'}, great news! Your order of ${record.get('Order')} is up!`, {}).then(data => res.sendStatus(200))
+
+          console.log(`this record has no notify`)
+          // res.sendStatus(204)
+        }
+      }
+    })
+  } else {
+    console.log('send via req.body.subscription')
+    return pushNotifs.sendPush(req.body.subscription, `Your order is ready!`, {}).then(data => res.sendStatus(200))
+  }
 })
 // route to artificially mark an order ready for demo purposes
 // this route is hit by Zapier after markOrderReady is called on a 5 minute poll. simulates order being made and called out.
@@ -187,10 +214,10 @@ app.post("/handleOrderReady", (req, res) => {
 // util route to check if push is working
 app.get("/testPush", (req, res) => {
   let sub = JSON.stringify({
-    "endpoint": "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABcgpCshYZ571W64g2XnysEHloIcL-bAryFfdxrqLeLLv3AmwNU8ZHEPEMyqC9uEx1OscH1e-_1TWiNoWb1t1Kj8dKnMz8_ZnWXX6s1R6Mx1oXC6Ex8aTjFw-62QUzjAULiMNPqaJaB0Br9DQLjww_ztBw1YXXN14BxcsFi6hhJ2TQNo0w",
+    "endpoint": "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABdUdLp-RywZG1swFTMygw7UiUwqEq3UPZFuTL-vSR8MvZeG7Vx_nLyNS1kHRuPG-CaQvvvh5OyslCIQV01xeoz4a3IJfcUEXEzdDsaD6hvfjnzM7C_kSbN6Bf5Y5vOPJfYuLzTKowJLTeRUdm9x61qgPcRO0wheUoS5XQFkjYGvoiy1I0",
     "keys": {
-      "auth":"cVSBa-qrWtQUQ89iljQpug",
-      "p256dh":"BEWPTwboiMxLxlXsOEMBlBruZ7XIJEE-WOv-3Tl30hqfSLhV2oSpxdrORNWFjXsCtZU73Gl-bCRFJ9R8rMjtGXw"
+      "auth":"HL4hcEX6GmsHbuEdc7yHaQ",
+      "p256dh":"BOHxb09hqNm0wzkwFvSswcTvu40odpOIkrlkRjQ-SainW7JJhZOUR4KA5N-DkLuFaaaIpjjoIQ5_KrBhWdWbgH8"
     }
   })
   pushNotifs.sendPush(sub, `Michel, great news! Your order of vanilla ice cream is up!`, {})

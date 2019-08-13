@@ -34,14 +34,16 @@ const pushMethods = {
   .then(serverResponse => serverResponse)
   .catch(error => console.error(error)),
   subscribeToPush: function (orderId) {
+    console.log(`subscribeToPush says nav.sw is of type: ${typeof navigator.serviceWorker}`)
     const applicationServerKey = "BEIgtyz_0BCHgNjhRRKMTlRgjDtij4OSNmn3U4Li-qGa2GnnXOpDngB5r4dEO2roAm64yoUlW1nqFkzGpOnYfmQ"
     const subscribeOptions = {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
     }
-    return navigator.serviceWorker.ready.then(async (swreg) => {
-      console.log("SW ready [called subscribeToPush] push.js:43")
-      let subscription = await swreg.pushManager.getSubscription()
+    if ('serviceWorker' in navigator) {
+      return navigator.serviceWorker.ready.then(async (swreg) => {
+        console.log("SW ready [called subscribeToPush] push.js:43")
+        let subscription = await swreg.pushManager.getSubscription()
         let isSubscribed = !(subscription === null)
         if (isSubscribed) {
           console.log(`isSubscribed`)
@@ -59,17 +61,25 @@ const pushMethods = {
           })
         }
       }).catch(pushSubscriptionError => pushSubscriptionError)
+    } else {
+      console.log(`serviceWorker was not in navigator`)
+      console.dir(navigator)
+    }
   },
   requestPushPermissionAndSubscribe: function (orderId) {
     return pushMethods.requestPushPermission()
     .then(permissionResult => {
       if (permissionResult === 'granted') {
+        console.log('requestPushPermission result was granted')
         return pushMethods.subscribeToPush(orderId)
-      } else return false
+      } else {
+        console.log('requestPushPermission result was not granted. returning false.')
+        return false
+      }
     })
   },
   triggerOrderReady: function (orderId, subscriptionFromServer) {
-    console.log(`triggerOrderReady`)
+    console.log(`triggerOrderReady ${orderId}. typeof subscriptionFromServer: ${typeof subscriptionFromServer}`)
     // setTimeout(async () => {
     //   // TODO: option here to retrieve subscription from session storage
     //   fetch("/markOrderReady", {
@@ -78,16 +88,21 @@ const pushMethods = {
     //     body: JSON.stringify({ orderId, notify: "" })
     //   })
     // }, 5000)
+    console.log(`typeof localStorage pushSub: ${typeof localStorage.getItem('pushSubscription')}`)
+    console.log(`typeof subscriptionFromServer: ${typeof subscriptionFromServer}`)
     let subscription = localStorage.getItem('pushSubscription') || JSON.stringify(subscriptionFromServer)
-    setTimeout(async () => {
-      console.dir(subscription)
-      // TODO: option here to retrieve subscription from session storage
-      fetch("/dispatchPush", {
-        method: "POST",
-        headers: {"Accept": "application/json", "Content-Type": "application/json"},
-        body: JSON.stringify({subscription})
-      })
-    }, 10000)
+    if (subscription) {
+      setTimeout(async () => {
+        console.log(`setTimeout call to fetch("/dispatchPush"). subscription:`)
+        console.dir(subscription)
+        // TODO: option here to retrieve subscription from session storage
+        fetch("/dispatchPush", {
+          method: "POST",
+          headers: {"Accept": "application/json", "Content-Type": "application/json"},
+          body: JSON.stringify({subscription, orderId})
+        })
+      }, 10000)
+    } else console.log('no subscription was available')
   }
 }
 export default pushMethods

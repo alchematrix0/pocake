@@ -1,11 +1,13 @@
 let swRegistration;
 if ('serviceWorker' in navigator) {
+  console.log(`Register-push-sw found a SW in navigator`)
   navigator.serviceWorker.register('./custom-sw.js', {scope: '/'})
   .then(swReg => {
     swRegistration = swReg
     if (swRegistration.pushManager) {
       swRegistration.pushManager.getSubscription()
       .then(function(subscription) {
+        console.dir(subscription)
         let isSubscribed = !(subscription === null)
         if (isSubscribed) {
           console.log('User IS subscribed.')

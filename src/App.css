@@ -28,6 +28,12 @@ section.question {
   flex-direction: column;
 }
 
+section.question.welcome.nameHasFocus {
+  height: 40vh;
+  margin-top: 40vh;
+  margin-bottom: 20vh;
+}
+
 nav#cart {
   position: fixed;
   bottom: 0;
@@ -45,7 +51,10 @@ p.greeting { margin: 2rem 0; }
 p.flavorName { font-size: 1rem; }
 
 @media screen and (max-width: 600px) {
-  section.question.hero { padding: 0; }
+  section.question.hero {
+    padding: 0;
+    min-height: 80vh;
+  }
   section.question:not(.hero) {
     font-size: 75%;
   }
@@ -191,7 +200,7 @@ input.customerName {
   line-height: 38px;
   -moz-osx-font-smoothing: grayscale;
 }
-.tabs ul.noBorder { border-bottom: none; }
+.tabs ul.noBorder { border-bottom: none; overflow: hidden; }
 section#addItem p:first-child { margin-bottom: 0; }
 img.imageOption { cursor: pointer; }
 .scoop { border-radius: 100%; cursor: pointer; }

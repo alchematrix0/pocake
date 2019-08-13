@@ -17,6 +17,7 @@ class App extends Component {
     super(props)
     this.state = {
       stripe: null,
+      welcomeStyle: "question welcome",
       customerName: "Friend",
       orderType: "togo",
       order: [],
@@ -76,13 +77,19 @@ class App extends Component {
   }
 
   scroll = (e, t, delay = 600, toTop = true, targetName) => {
+    console.log('calling scroll')
     let target = document.getElementById(e.target ? e.target.dataset.scrollto : t)
     setTimeout(() => {
       target.scrollIntoView({behavior: "smooth", block: toTop ? "start" : "center"})
-      if (target.id === "welcome") { setTimeout(function () { document.getElementById("customerName").focus() }, delay) }
+      if (target.id === "welcome" && window.innerWidth > 540) { setTimeout(function () {
+        document.getElementById("customerName").focus()
+      }, delay) }
       if (target.id === "checkout" && this.state.isCheckout) { setTimeout(() => { this.state.stripeCardElement.focus() }, delay) }
     }, delay)
   }
+
+  handleInputFocus = (e) => window.innerWidth < 540 ? this.setState({welcomeStyle: "question welcome nameHasFocus"}) : null
+  handleInputBlur = (e) => window.innerWidth < 540 ? this.setState({welcomeStyle: "question welcome"}) : null
 
   checkout = () => {
     this.calculateCost(false, false)
@@ -90,7 +97,6 @@ class App extends Component {
   }
 
   render() {
-    console.dir(config)
     return (
       <div className="App" style={{ backgroundColor: config.colors.background}}>
         <section className="question hero">
@@ -117,11 +123,20 @@ class App extends Component {
           </div>
         </section>
         {/* WELCOME */}
-        <section id="welcome" className="question">
+        <section id="welcome" className={this.state.welcomeStyle}>
           <p className="spaced">
             Let's start with your name
           </p>
-          <input id="customerName" className="customerName" name="customerName" data-next="type" onKeyUp={this.checkIfEnter} onChange={this.setCustomerName} />
+          <input
+            id="customerName"
+            className="customerName"
+            name="customerName"
+            data-next="type"
+            onFocus={this.handleInputFocus}
+            // onBlur={this.handleInputBlur}
+            onKeyUp={this.checkIfEnter}
+            onChange={this.setCustomerName}
+          />
           <br />
           <OK
             show={this.state.customerName !== "Friend" && this.state.customerName.length > 0}

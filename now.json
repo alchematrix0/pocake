@@ -35,7 +35,9 @@
     {"src": "/markOrderReady", "dest": "server.js"},
     {"src": "/chargeSquareNonce", "dest": "server.js"},
     {"src": "/handleOrderReady", "dest": "server.js"},
+    {"src": "/dispatchPush", "dest": "server.js"},
     {"src": "/testPush", "dest": "server.js"},
+    {"src": "/serverUp", "dest": "server.js"},
     {"src": "/receivePush", "dest": "server.js"},
     { "src": "^/(.*)", "headers": {"cache-control": "s-maxage=0"}, "dest": "/index.html" }
   ],

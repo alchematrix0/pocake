@@ -75,7 +75,8 @@ var paymentForm = new SqPaymentForm({
   },
   postalCode: {
     elementId: 'sq-postal-code',
-    placeholder: '12345'
+    placeholder: '12345',
+    value: '94103'
   },
 
   // SqPaymentForm callback functions
@@ -166,8 +167,6 @@ var paymentForm = new SqPaymentForm({
         return;
       }
       // Assign the nonce value to the hidden form field
-      console.log(nonce)
-      console.dir(cardData)
       document.getElementById('card-nonce').value = nonce;
       return nonce
       // POST the nonce form to the payment processing page
@@ -221,6 +220,9 @@ var paymentForm = new SqPaymentForm({
     paymentFormLoaded: function () {
       /* HANDLE AS DESIRED */
       console.log("The form loaded!");
+      console.log(typeof SqPaymentForm)
+      console.log(typeof paymentForm)
+      SqPaymentForm.setPostalCode("94103")
     }
   }
 });
@@ -231,5 +233,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     window.paymentForm = paymentForm
     paymentForm.build();
     paymentForm.recalculateSize();
+    paymentForm.setPostalCode("94103");
   }
 });

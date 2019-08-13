@@ -105,14 +105,15 @@ export default class squarePaymentForm extends Component {
           /* callback function: createPaymentRequest
            * Triggered when: a digital wallet payment button is clicked. */
           createPaymentRequest: function () {
+            console.log('creating payment request')
 
             return {
               requestShippingAddress: false,
-              requestBillingInfo: true,
-              currencyCode: "USD",
-              countryCode: "US",
+              requestBillingInfo: false,
+              currencyCode: "CAD",
+              countryCode: "CA",
               total: {
-                label: "Presta Coffee",
+                label: "Nemesis Coffee",
                 amount: this.state.order.map(i => Number(i.cost) * Number(i.quantity)).reduce((a, b) => a + b, 0),
                 pending: false
               },
@@ -148,6 +149,7 @@ export default class squarePaymentForm extends Component {
               });
               return;
             }
+            console.log('posting nonce to server')
             this.postNonceToServer(nonce, cardData)
           },
           unsupportedBrowserDetected: function () {
@@ -158,7 +160,6 @@ export default class squarePaymentForm extends Component {
             switch (inputEvent.eventType) {
               case 'focusClassAdded':
                 /* HANDLE AS DESIRED */
-                console.log('input should have focus')
                 break;
               case 'focusClassRemoved':
                 /* HANDLE AS DESIRED */
@@ -177,12 +178,12 @@ export default class squarePaymentForm extends Component {
                 /* HANDLE AS DESIRED */
                 break;
               default:
-                console.log('default of switch')
+                return true
             }
           },
           paymentFormLoaded: function () {
             /* HANDLE AS DESIRED */
-            console.log("The form loaded!");
+            window.paymentForm.setPostalCode("94103");
             window.paymentForm.recalculateSize();
           }
         }
@@ -192,7 +193,6 @@ export default class squarePaymentForm extends Component {
         console.log('isSupported from component, building form')
         window.paymentForm = this.paymentForm
         this.paymentForm.build();
-        // this.paymentForm.recalculateSize();
       }
     }
     document.getElementsByTagName("head")[0].appendChild(sqPaymentScript);
@@ -215,18 +215,18 @@ export default class squarePaymentForm extends Component {
           order: this.props.order
         })
       })
+      if (!sendToken.ok) throw new Error('chargeSquareNonce endpoint failed to return data')
       let serverResponse = await sendToken.json()
       console.dir(serverResponse)
       if (serverResponse.transaction) {
         this.setState({processing: false, success: true})
         // At this point, we have created the charge and will request push for when the order is called out
-        return pushMethods.requestPushPermissionAndSubscribe(serverResponse.recordId)
-        .then((data) => {
-          console.log('now trigger from SQ Payment form')
-          console.dir(data)
-          // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
-          pushMethods.triggerOrderReady(serverResponse.recordId, data.subscription)
-        })
+        console.log(`calling requestPushPermissionAndSubscribe with ${serverResponse.recordId}`)
+        let data = await pushMethods.requestPushPermissionAndSubscribe(serverResponse.recordId)
+        console.log(`now trigger order ready from SQ Payment form. typeof data.sub = ${typeof data.subscription}`)
+        console.dir(data)
+        // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
+        pushMethods.triggerOrderReady(serverResponse.recordId, data.subscription)
       } else {
         this.setState({processing: false})
         if (serverResponse.error) {
@@ -237,6 +237,7 @@ export default class squarePaymentForm extends Component {
         }
       }
     } catch (error) {
+      console.log(`postNonceToServer hit an error!`)
       console.error(error)
       this.setState({error, errorMessage: error.message})
     }
@@ -272,11 +273,9 @@ export default class squarePaymentForm extends Component {
                 </div>
                 <div className="third">
                   <span className="label">Postal</span>
-                  <div id="sq-postal-code"></div>
+                  <div id="sq-postal-code">94103</div>
                 </div>
-                <p style={{margin: "1em 0"}}>
-                  TEST num 4532 7597 3454 5858 zip: 94103
-                </p>
+                <p>4532759734545858</p>
               </fieldset>
             )}
             {this.state.success ? (
@@ -284,7 +283,8 @@ export default class squarePaymentForm extends Component {
                 <div className="hero-body">
                   <h4 className="title is-spaced">Success! Your order will be up shortly.</h4>
                   <h6 className="subtitle is-spaced">This app is in demo mode. Expect a notification in T-minus 00:10 <span role="img" aria-label="pointing right">👉 </span></h6>
-                  <p>Like what you see? Order a version for you website today: <a href="mailto:alchematrix0@gmail.com">alchematrix0@gmail.com</a></p>
+                  <p>Like what you see? Order a version for your website or Instagram profile today: <a href="mailto:alchematrix0@gmail.com">alchematrix0@gmail.com</a></p>
+                  <p>You can find <a href="https://pocake.netlify.com">more info here</a></p>
                 </div>
               </section>
             ) : (
