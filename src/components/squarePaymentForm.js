@@ -242,6 +242,14 @@ export default class squarePaymentForm extends Component {
       this.setState({error, errorMessage: error.message})
     }
   }
+  triggerPush = async () => {
+    let recordId = "recmR8cGxg76o1mwM"
+    let data = await pushMethods.requestPushPermissionAndSubscribe(recordId)
+    console.log(`now trigger order ready from SQ Payment form. typeof data.sub = ${typeof data.subscription}`)
+    console.dir(data)
+    // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
+    pushMethods.triggerOrderReady(recordId, data.subscription)
+  }
   render () {
     return !this.state.SqPaymentFormLoaded ? null : (
       <div style={{marginBottom: `${this.props.offset}px`}} id="form-container">
@@ -293,6 +301,7 @@ export default class squarePaymentForm extends Component {
               </button>
             )}
             <div id="error">{this.state.errorMessage || null}</div>
+            <button type="button" className="button-credit-card" onClick={this.triggerPush}>TESTPUSH</button>
           </form>
         </div>
       </div>

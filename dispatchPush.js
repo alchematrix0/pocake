@@ -1,16 +1,15 @@
 const webPush = require("web-push")
-console.log(`set vapid details: typeof pubkey: ${typeof process.env.VAPID_PUBLIC_KEY_PRESTA}\ntypeof privkey: ${typeof process.env.VAPID_PRIVATE_KEY_PRESTA}`)
 webPush.setVapidDetails(
   'mailto:alchematrix0@gmail.com',
-  process.env.VAPID_PUBLIC_KEY_PRESTA,
-  process.env.VAPID_PRIVATE_KEY_PRESTA
+  process.env.VPUBKEY,
+  process.env.VPRIVKEY
 )
 
 module.exports = {
   sendPush: function (subscription, payload, options = {}, isJson = false) {
     try {
       console.log(`call sendPush from dispatchPush.js`)
-      if (!process.env.VAPID_PUBLIC_KEY_PRESTA || !process.env.VAPID_PRIVATE_KEY_PRESTA) {
+      if (!process.env.VPUBKEY || !process.env.VRIVKEY) {
         console.log("You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY "+
         "environment variables. You can use the following ones:")
         console.log(webPush.generateVAPIDKeys())

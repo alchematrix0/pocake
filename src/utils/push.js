@@ -21,21 +21,32 @@ const pushMethods = {
       if (permissionResult !== "granted") {
         console.log(`We weren"t granted permission. User selected ${permissionResult}`)
       } else {
+        console.log(`Permission granted: ${permissionResult}`)
         return permissionResult
       }
     })
   },
-  sendSubscriptionToServer : (pushSubscription, orderId) => fetch("/receivePushSubscription", {
-    method: "POST",
-    headers: { "Content-type": "application/json"},
-    body: JSON.stringify({ subscription: pushSubscription, orderId })
-  })
-  .then(updateResponse => updateResponse.json())
-  .then(serverResponse => serverResponse)
-  .catch(error => console.error(error)),
+  sendSubscriptionToServer : function (subscription, orderId) {
+    console.log(`calling sendSubscriptionToServer`)
+    return fetch("/receivePushSubscription", {
+      method: "POST",
+      headers: { "Accept": "application/json", "Content-type": "application/json" },
+      body: JSON.stringify({ subscription, orderId })
+    })
+    .then(updateResponse => updateResponse.json())
+    .then(serverResponse => {
+      console.log(`sendSubscriptionToServer responded with:`)
+      console.dir(serverResponse)
+      return subscription
+    })
+    .catch(error => {
+      console.error(error);
+      return subscription
+    })
+  },
   subscribeToPush: function (orderId) {
-    console.log(`subscribeToPush says nav.sw is of type: ${typeof navigator.serviceWorker}`)
-    const applicationServerKey = "BEIgtyz_0BCHgNjhRRKMTlRgjDtij4OSNmn3U4Li-qGa2GnnXOpDngB5r4dEO2roAm64yoUlW1nqFkzGpOnYfmQ"
+    // const applicationServerKey = "BEIgtyz_0BCHgNjhRRKMTlRgjDtij4OSNmn3U4Li-qGa2GnnXOpDngB5r4dEO2roAm64yoUlW1nqFkzGpOnYfmQ"
+    const applicationServerKey = "BD7-pcfHwzz08j6jlA7YAhKYELJH86uvWP8gV1vmE5GPGrjI3Sg3cXsxrWC24mHzTNJoY_Q0q1prgyCAYBKtpNA";
     const subscribeOptions = {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
@@ -46,21 +57,45 @@ const pushMethods = {
         let subscription = await swreg.pushManager.getSubscription()
         let isSubscribed = !(subscription === null)
         if (isSubscribed) {
-          console.log(`isSubscribed`)
+          console.log(`isSubscribed, set subscription to localStorage`)
+          console.dir(subscription)
           localStorage.setItem('pushSubscription', JSON.stringify(subscription))
           // TODO might be a good time to stick this in session storage
+          console.log(`sendSubscriptionToServer`)
+          console.dir(subscription)
           return pushMethods.sendSubscriptionToServer(subscription, orderId)
         } else {
-          console.log(`not subscribed`)
+          console.log(`not subscribed, call pushManager.subscribe`)
           return swreg.pushManager.subscribe(subscribeOptions)
           // TODO might be a good time to stick this in session storage
           .then(pushSubscription => {
+            console.log('returning from pushManager.subscribe without error')
             console.dir(pushSubscription)
             localStorage.setItem('pushSubscription', JSON.stringify(pushSubscription))
+            console.log(`sendSubscriptionToServer`)
+            console.dir(pushSubscription)
             return pushMethods.sendSubscriptionToServer(pushSubscription, orderId)
           })
+          .catch(error => {
+            console.log(`swreg.pushManager.subscribe(subscribeOptions) hit an error:`)
+            console.error(error)
+            return swreg.pushManager.subscribe({userVisibleOnly: true})
+            .then(pushSub => {
+              console.log('succesfully subscribed without an applicationServerKey!')
+              localStorage.setItem('pushSubscription', JSON.stringify(pushSub))
+              return pushMethods.sendSubscriptionToServer(pushSub, orderId)
+            })
+            .catch(error => {
+              console.log('secondary catch handler, failed to subscribe without an applicationServerKey')
+              return error
+            })
+          })
         }
-      }).catch(pushSubscriptionError => pushSubscriptionError)
+      }).catch(pushSubscriptionError => {
+        console.log('caught pushSubscriptionError')
+        console.error(pushSubscriptionError)
+        return pushSubscriptionError
+      })
     } else {
       console.log(`serviceWorker was not in navigator`)
       console.dir(navigator)
@@ -81,7 +116,6 @@ const pushMethods = {
   triggerOrderReady: function (orderId, subscriptionFromServer) {
     console.log(`triggerOrderReady ${orderId}. typeof subscriptionFromServer: ${typeof subscriptionFromServer}`)
     // setTimeout(async () => {
-    //   // TODO: option here to retrieve subscription from session storage
     //   fetch("/markOrderReady", {
     //     method: "POST",
     //     headers: {"Accept": "application/json", "Content-Type": "application/json"},
@@ -89,20 +123,18 @@ const pushMethods = {
     //   })
     // }, 5000)
     console.log(`typeof localStorage pushSub: ${typeof localStorage.getItem('pushSubscription')}`)
+    console.dir(localStorage.getItem('pushSubscription'))
     console.log(`typeof subscriptionFromServer: ${typeof subscriptionFromServer}`)
     let subscription = localStorage.getItem('pushSubscription') || JSON.stringify(subscriptionFromServer)
-    if (subscription) {
-      setTimeout(async () => {
-        console.log(`setTimeout call to fetch("/dispatchPush"). subscription:`)
-        console.dir(subscription)
-        // TODO: option here to retrieve subscription from session storage
-        fetch("/dispatchPush", {
-          method: "POST",
-          headers: {"Accept": "application/json", "Content-Type": "application/json"},
-          body: JSON.stringify({subscription, orderId})
-        })
-      }, 10000)
-    } else console.log('no subscription was available')
+    setTimeout(async () => {
+      console.log(`setTimeout call to fetch("/dispatchPush"). subscription:`)
+      console.dir(subscription)
+      fetch("/dispatchPush", {
+        method: "POST",
+        headers: {"Accept": "application/json", "Content-Type": "application/json"},
+        body: JSON.stringify({subscription, orderId})
+      })
+    }, 10000)
   }
 }
 export default pushMethods

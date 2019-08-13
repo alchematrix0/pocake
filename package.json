@@ -5,8 +5,10 @@
   "private": false,
   "dependencies": {
     "airtable": "^0.5.8",
+    "babel-loader": "8.0.5",
     "body-parser": "^1.18.3",
     "concurrently": "^4.1.0",
+    "cra-append-sw": "^2.6.1",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "nodemon": "^1.18.9",
@@ -24,11 +26,11 @@
     "start": "concurrently \"NODE_ENV=production node ./server.js\" \"BROWSER=none react-scripts start\"",
     "startDev": "concurrently \"NODE_ENV=development nodemon ./server.js --ignore ./src\" \"BROWSER=none react-scripts start\"",
     "ngrok": "ngrok http 3000 --host-header='localhost:3000'",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cra-append-sw --skip-compile ./sw.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "now && now alias",
-    "now-build": "react-scripts build"
+    "deploy": "now --target production",
+    "now-build": "react-scripts build && cra-append-sw --skip-compile ./sw.js"
   },
   "eslintConfig": {
     "extends": "react-app"

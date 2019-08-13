@@ -129,6 +129,7 @@ app.post("/charge", async (req, res) => {
 })
 app.post("/receivePushSubscription", (req, res) => {
   console.log("receivePushSubscription")
+  console.dir(req.body)
   db("presta").update(req.body.orderId, { "Notify": JSON.stringify(req.body.subscription) }, function (err, record) {
     if (err) {
       console.log('airtable error')
@@ -153,24 +154,29 @@ app.post("/dispatchPush", (req, res) => {
   if (req.body.orderId) {
     console.log('yes req.body.orderId')
     db("presta").find(req.body.orderId, function(err, record) {
+      console.log('db presta find call callback')
       if (err) {
+        console.log(`DB("presta") find error`)
         console.error(err)
         res.sendStatus(204)
       } else {
+        console.log('found our record via orderId')
+        console.dir(record.get("Notify"))
         if (record.get("Notify")) {
           console.log(`Send push via record: ${record.get("Notify")}`)
           pushNotifs.sendPush(req.body.subscription || record.get("Notify"), `${record.get('Name')}, great news! Your order of ${record.get('Order')} is up!`, {}).then(data => res.sendStatus(200))
           // res.json({notify: record.get("Notify")})
         } else {
+          console.log(`record.get("Notify") returned false...`)
           pushNotifs.sendPush(req.body.subscription, `${record.get('Name') || 'Buddy'}, great news! Your order of ${record.get('Order')} is up!`, {}).then(data => res.sendStatus(200))
 
-          console.log(`this record has no notify`)
           // res.sendStatus(204)
         }
       }
     })
   } else {
-    console.log('send via req.body.subscription')
+    console.log('send via req.body.subscription, no orderId in req.body')
+    console.dir(req.body.subscription)
     return pushNotifs.sendPush(req.body.subscription, `Your order is ready!`, {}).then(data => res.sendStatus(200))
   }
 })
