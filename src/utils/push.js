@@ -36,6 +36,7 @@ const pushMethods = {
     .then(updateResponse => updateResponse.json())
     .then(serverResponse => {
       console.log(`sendSubscriptionToServer responded with:`)
+      // {order: Airtable order object, subscription: {endpoint: <string>, keys: <obj>}}
       console.dir(serverResponse)
       return subscription
     })
@@ -57,17 +58,12 @@ const pushMethods = {
         let subscription = await swreg.pushManager.getSubscription()
         let isSubscribed = !(subscription === null)
         if (isSubscribed) {
-          console.log(`isSubscribed, set subscription to localStorage`)
-          console.dir(subscription)
+          console.log(`isSubscribed, set subscription to localStorage and send to server`)
           localStorage.setItem('pushSubscription', JSON.stringify(subscription))
-          // TODO might be a good time to stick this in session storage
-          console.log(`sendSubscriptionToServer`)
-          console.dir(subscription)
           return pushMethods.sendSubscriptionToServer(subscription, orderId)
         } else {
           console.log(`not subscribed, call pushManager.subscribe`)
           return swreg.pushManager.subscribe(subscribeOptions)
-          // TODO might be a good time to stick this in session storage
           .then(pushSubscription => {
             console.log('returning from pushManager.subscribe without error')
             console.dir(pushSubscription)

@@ -12,3 +12,12 @@ self.addEventListener('push', (e) => {
 self.addEventListener('install', function (e) {
   console.log('Custom-SW is installed :: ' + Math.random())
 })
+self.addEventListener('message', function (e) {
+  console.log('got message event')
+  e.waitUntil(
+    self.registration.showNotification('Order up!', {
+      body: 'Your order from Nemesis is ready!',
+      icon: './icons/favicon.ico',
+    })
+  )
+})

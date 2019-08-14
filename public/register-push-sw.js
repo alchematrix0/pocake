@@ -3,6 +3,7 @@ if ('serviceWorker' in navigator) {
   console.log(`Register-push-sw found a SW in navigator`)
   navigator.serviceWorker.register('./custom-sw.js', {scope: '/'})
   .then(swReg => {
+    console.log('got a swReg')
     swRegistration = swReg
     if (swRegistration.pushManager) {
       swRegistration.pushManager.getSubscription()

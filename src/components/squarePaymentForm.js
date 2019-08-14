@@ -222,11 +222,19 @@ export default class squarePaymentForm extends Component {
         this.setState({processing: false, success: true})
         // At this point, we have created the charge and will request push for when the order is called out
         console.log(`calling requestPushPermissionAndSubscribe with ${serverResponse.recordId}`)
-        let data = await pushMethods.requestPushPermissionAndSubscribe(serverResponse.recordId)
-        console.log(`now trigger order ready from SQ Payment form. typeof data.sub = ${typeof data.subscription}`)
-        console.dir(data)
+        let subscription = await pushMethods.requestPushPermissionAndSubscribe(serverResponse.recordId)
+        console.log(`now trigger order ready from SQ Payment form. typeof subscription = ${typeof subscription}`)
+        console.dir(subscription)
         // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
-        pushMethods.triggerOrderReady(serverResponse.recordId, data.subscription)
+        if (subscription) {
+          pushMethods.triggerOrderReady(serverResponse.recordId, subscription)
+        } else {
+          if (navigator.serviceWorker) {
+            if (navigator.serviceWorker.controller) {
+              setTimeout(() => navigator.serviceWorker.controller.postMessage("Order up"), 8000)
+            } else console.log('no .controller')
+          } else console.log('no serviceWorker')
+        }
       } else {
         this.setState({processing: false})
         if (serverResponse.error) {
@@ -243,12 +251,23 @@ export default class squarePaymentForm extends Component {
     }
   }
   triggerPush = async () => {
-    let recordId = "recmR8cGxg76o1mwM"
-    let data = await pushMethods.requestPushPermissionAndSubscribe(recordId)
-    console.log(`now trigger order ready from SQ Payment form. typeof data.sub = ${typeof data.subscription}`)
-    console.dir(data)
-    // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
-    pushMethods.triggerOrderReady(recordId, data.subscription)
+    navigator.serviceWorker.controller.postMessage("Order up")
+    // console.log("triggerPush")
+    // let recordId = "recmR8cGxg76o1mwM"
+    // let data = await pushMethods.requestPushPermissionAndSubscribe(recordId)
+    // console.log(`now trigger order ready from SQ Payment form. typeof data.sub = ${typeof data.subscription}`)
+    // console.dir(data)
+    // // triggerOrderReady = Artificial implementation of order being called after 5 seconds for demo purposes
+    // if (data) {
+    //   pushMethods.triggerOrderReady(recordId, data.subscription)
+    // } else {
+    //   if (navigator.serviceWorker) {
+    //     if (navigator.serviceWorker.controller) {
+    //       console.log(`setting timeout 5 seconds`)
+    //       setTimeout(() => navigator.serviceWorker.controller.postMessage("Order up"), 5000)
+    //     } else console.log("no .controller")
+    //   } else console.log("no serviceWorker")
+    // }
   }
   render () {
     return !this.state.SqPaymentFormLoaded ? null : (
@@ -291,6 +310,7 @@ export default class squarePaymentForm extends Component {
                 <div className="hero-body">
                   <h4 className="title is-spaced">Success! Your order will be up shortly.</h4>
                   <h6 className="subtitle is-spaced">This app is in demo mode. Expect a notification in T-minus 00:10 <span role="img" aria-label="pointing right">👉 </span></h6>
+                  <p>nb: browser push is not yet supported on iOS! Sorry</p>
                   <p>Like what you see? Order a version for your website or Instagram profile today: <a href="mailto:alchematrix0@gmail.com">alchematrix0@gmail.com</a></p>
                   <p>You can find <a href="https://pocake.netlify.com">more info here</a></p>
                 </div>
@@ -301,7 +321,7 @@ export default class squarePaymentForm extends Component {
               </button>
             )}
             <div id="error">{this.state.errorMessage || null}</div>
-            <button type="button" className="button-credit-card" onClick={this.triggerPush}>TESTPUSH</button>
+            {/* <button type="button" className="button-credit-card" onClick={this.triggerPush}>TESTPUSH</button> */}
           </form>
         </div>
       </div>
