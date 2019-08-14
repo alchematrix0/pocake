@@ -9,7 +9,7 @@ module.exports = {
   sendPush: function (subscription, payload, options = {}, isJson = false) {
     try {
       console.log(`call sendPush from dispatchPush.js`)
-      if (!process.env.VPUBKEY || !process.env.VRIVKEY) {
+      if (!process.env.VPUBKEY || !process.env.VPRIVKEY) {
         console.log("You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY "+
         "environment variables. You can use the following ones:")
         console.log(webPush.generateVAPIDKeys())
