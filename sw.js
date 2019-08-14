@@ -12,5 +12,10 @@ self.addEventListener('push', (e) => {
 self.addEventListener('install', function (e) {
   console.log('Custom-SW is installed :: ' + Math.random())
 })
+self.addEventListener('message', function (e) {
+  console.dir(e)
+  if (e.data) console.dir(e.data)
+  console.log(`Custom-SW heard a message!`)
+})
 
 //     "gcm_sender_id": "412755447731"
