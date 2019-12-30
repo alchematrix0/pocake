@@ -302,7 +302,7 @@ export default class squarePaymentForm extends Component {
                   <span className="label">Postal</span>
                   <div id="sq-postal-code">94103</div>
                 </div>
-                <p>4532759734545858</p>
+                <p>demo card #: 4532759734545858 (any exp and cvc will work)</p>
               </fieldset>
             )}
             {this.state.success ? (
@@ -310,7 +310,10 @@ export default class squarePaymentForm extends Component {
                 <div className="hero-body">
                   <h4 className="title is-spaced">Success! Your order will be up shortly.</h4>
                   <h6 className="subtitle is-spaced">This app is in demo mode. Expect a notification in T-minus 00:10 <span role="img" aria-label="pointing right">👉 </span></h6>
-                  <p>nb: browser push is not yet supported on iOS! Sorry</p>
+                  <p>Be sure to accept notifications from this page</p>
+                  <br />
+                  <small>nb: browser push is not yet supported on iOS! Sorry</small>
+                  <br />
                   <p>Like what you see? Order a version for your website or Instagram profile today: <a href="mailto:alchematrix0@gmail.com">alchematrix0@gmail.com</a></p>
                   <p>You can find <a href="https://pocake.netlify.com">more info here</a></p>
                 </div>
