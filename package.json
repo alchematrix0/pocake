@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
-    "airtable": "^0.5.8",
+    "airtable": "^0.7.2",
     "body-parser": "^1.18.3",
     "concurrently": "^4.1.0",
     "dotenv": "^6.2.0",
