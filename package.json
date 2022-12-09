@@ -4,10 +4,10 @@
   "private": false,
   "dependencies": {
     "airtable": "^0.5.8",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.20.1",
     "concurrently": "^4.1.0",
     "dotenv": "^6.2.0",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "nodemon": "^1.18.9",
     "path": "^0.12.7",
     "react": "^16.7.0",
